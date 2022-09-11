@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.3465" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/drawable/ic_profile.xml" value="0.1845" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/drawable/shape.xml" value="0.3465" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/activity_login.xml" value="0.28229166666666666" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_dashboard.xml" value="0.23645833333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_home.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_new_post.xml" value="0.33489583333333334" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_notifications.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_post.xml" value="0.3435897435897436" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_profile.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_search.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_sign_in.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_sign_up.xml" value="0.28229166666666666" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/fragment_user.xml" value="0.228125" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/rv_comment_item.xml" value="0.25092592592592594" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/rv_post_item.xml" value="0.3489583333333333" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/layout/rv_search_item.xml" value="0.34791666666666665" />
+        <entry key="..\:/Android Projects/Let's Confess/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
