@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.letsconnect.*
 import com.example.letsconnect.databinding.FragmentSignUpBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -34,7 +35,9 @@ class SignUpFragment : Fragment() {
     private lateinit var encodedImage: ByteArray
     private val auth = FirebaseAuth.getInstance()
    // private lateinit var preferenceManager:
-   private val database = FirebaseFirestore.getInstance()
+
+
+    private val database = FirebaseFirestore.getInstance()
     private lateinit var imageUri: Uri
     private val userRef = database.collection("users")
    private lateinit var userId: String
@@ -48,7 +51,6 @@ class SignUpFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentSignUpBinding.inflate(layoutInflater)
         val view = binding.root
-
 
        // preferenceManager = context?.let { PreferenceManager(it) }!!
         setListeners()
@@ -93,6 +95,7 @@ class SignUpFragment : Fragment() {
                       user[KEY_USER_ID] = auth.currentUser!!.uid
                       userId = auth.currentUser!!.uid
                       storageReference = FirebaseStorage.getInstance().reference.child("$userId/profilePhoto")
+                      if(this::encodedImage.isInitialized)
                       uploadImage()
                       database.collection(KEY_COLLECTION_USERS).document(user[KEY_USER_ID] as String).set(user).addOnSuccessListener {
                           loading(false)
@@ -190,4 +193,5 @@ class SignUpFragment : Fragment() {
             binding.buttonSignUp.visibility = View.VISIBLE
         }
     }
+
 }

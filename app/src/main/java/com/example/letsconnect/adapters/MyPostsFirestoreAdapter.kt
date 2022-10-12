@@ -1,14 +1,13 @@
 package com.example.letsconnect.adapters
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.letsconnect.Post
-import com.example.letsconnect.R
+import com.bumptech.glide.Glide
 import com.example.letsconnect.databinding.RvPostItemBinding
+import com.example.letsconnect.models.Post
+
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
@@ -36,8 +35,9 @@ class MyPostsFirestoreAdapter(
                 tvPostMessage.text = post.postMessage
                 tvTotalComments.text = post.totalComments.toString()
                 tvTotalLikes.text = post.totalLikes.toString()
-                tvViews.text = "Views: ${post.totalViews.toString()}"
-
+                val image = post.profileImage
+                if(image!=null)
+                Glide.with(imageView).load(image).into(imageView)
             }
         }
     }

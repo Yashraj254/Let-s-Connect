@@ -3,11 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/signInFragment">
 
     <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.letsconnect.login.SignInFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_signInFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.example.letsconnect.login.SignUpFragment"
+        android:label="SignUpFragment"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_signUpFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.letsconnect.ui.home.HomeFragment"
+        android:name="com.example.letsconnect.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -16,44 +37,55 @@
         <action
             android:id="@+id/action_navigation_home_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_usersChatFragment"
+            app:destination="@id/usersChatFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.letsconnect.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_liked_posts"
+        android:name="com.example.letsconnect.likedPosts.LikedPostsFragment"
+        android:label="fragment_liked_posts"
+        tools:layout="@layout/fragment_liked_posts" >
+        <action
+            android:id="@+id/action_navigation_liked_posts_to_postFragment"
+            app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_navigation_liked_posts_to_usersChatFragment"
+            app:destination="@id/usersChatFragment" />
+        <action
+            android:id="@+id/action_navigation_liked_posts_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_post"
-        android:name="com.example.letsconnect.ui.addPost.NewPostFragment"
+        android:name="com.example.letsconnect.post.NewPostFragment"
         android:label="fragment_new_post"
         tools:layout="@layout/fragment_new_post" />
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.letsconnect.ui.profile.ProfileFragment"
+        android:name="com.example.letsconnect.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <argument
             android:name="selected_userId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_search_users"
+            app:destination="@id/navigation_search_users" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_search"
-        android:name="com.example.letsconnect.ui.search.SearchFragment"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
-    <fragment
-        android:id="@+id/userFragment"
-        android:name="com.example.letsconnect.ui.users.UserFragment"
-        android:label="fragment_user"
-        tools:layout="@layout/fragment_user" >
-        <argument
-            android:name="selected_userId"
-            app:argType="string" />
+        android:id="@+id/navigation_search_users"
+        android:name="com.example.letsconnect.search.SearchUsersFragment"
+        android:label="fragment_search_users"
+        tools:layout="@layout/fragment_search_users" >
+        <action
+            android:id="@+id/action_navigation_search_users_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
         android:id="@+id/postFragment"
-        android:name="com.example.letsconnect.ui.post.PostFragment"
+        android:name="com.example.letsconnect.post.PostFragment"
         android:label="PostFragment"
         tools:layout="@layout/fragment_post">
         <argument
@@ -62,5 +94,31 @@
         <action
             android:id="@+id/action_postFragment_to_navigation_profile"
             app:destination="@id/navigation_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/usersChatFragment"
+        android:name="com.example.letsconnect.chat.UsersChatFragment"
+        android:label="fragment_users_chat"
+        tools:layout="@layout/fragment_users_chat" >
+        <action
+            android:id="@+id/action_usersChatFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.letsconnect.chat.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.example.letsconnect.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start" >
+        <action
+            android:id="@+id/action_startFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_startFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
     </fragment>
 </navigation>
