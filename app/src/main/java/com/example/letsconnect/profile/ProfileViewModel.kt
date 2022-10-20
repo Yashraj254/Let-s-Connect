@@ -1,42 +1,41 @@
 package com.example.letsconnect.profile
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letsconnect.Resource
-import com.example.letsconnect.models.Users
-import com.example.letsconnect.repository.FirebaseRepository
+import com.example.letsconnect.models.Post
+import com.example.letsconnect.repository.PostsRepository
+import com.example.letsconnect.repository.UserRepository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val repository: FirebaseRepository) :
+class ProfileViewModel @Inject constructor(private val repository: UserRepository,private val repo:PostsRepository) :
     ViewModel() {
 
     // QuerySnapshot
-    private var _currentUserPosts: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
-    val currentUserPosts: LiveData<Resource<QuerySnapshot>> = _currentUserPosts
+    private var _currentUserPosts: MutableStateFlow<Resource<QuerySnapshot>> = MutableStateFlow(Resource.Loading())
+    val currentUserPosts: StateFlow<Resource<QuerySnapshot>> = _currentUserPosts
 
     //DocumentSnapshot
-    private var _currentUserDetails: MutableLiveData<Resource<DocumentSnapshot>> = MutableLiveData()
-    val currentUserDetails: LiveData<Resource<DocumentSnapshot>> = _currentUserDetails
+    private var _currentUserDetails: MutableStateFlow<Resource<DocumentSnapshot>> = MutableStateFlow(Resource.Loading())
+    val currentUserDetails: StateFlow<Resource<DocumentSnapshot>> = _currentUserDetails
 
-    private var _following: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
-    val following: LiveData<Resource<QuerySnapshot>> = _following
+    private var _following: MutableStateFlow<Resource<QuerySnapshot>> = MutableStateFlow(Resource.Loading())
+    val following: StateFlow<Resource<QuerySnapshot>> = _following
 
     fun getCurrentUserPosts(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _currentUserPosts.postValue(Resource.Loading())
-        _currentUserPosts.postValue(repository.showCurrentUserPosts(userId))
+        _currentUserPosts.emit(repo.showCurrentUserPosts(userId))
     }
 
     fun getCurrentUserDetails(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _currentUserDetails.postValue(Resource.Loading())
-        _currentUserDetails.postValue(repository.showCurrentUserDetails(userId))
+        _currentUserDetails.emit(repository.showCurrentUserDetails(userId))
     }
 
     fun followUser(userId: String,user:HashMap<String, Any>) = viewModelScope.launch(Dispatchers.IO)  {
@@ -44,7 +43,14 @@ class ProfileViewModel @Inject constructor(private val repository: FirebaseRepos
     }
 
     fun checkIfFollowing(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _following.postValue(Resource.Loading())
-        _following.postValue(repository.checkIfFollowing(userId))
+        _following.emit(repository.checkIfFollowing(userId))
+    }
+
+    fun likePost(post: Post) = viewModelScope.launch(Dispatchers.IO) {
+        repo.likePost(post)
+    }
+
+     fun uploadProfilePic(encodedImage:ByteArray) = viewModelScope.launch(Dispatchers.IO) {
+        repository.uploadProfilePic(encodedImage)
     }
 }

@@ -1,7 +1,7 @@
 package com.example.letsconnect.models
 
 class Post {
-    constructor() {}
+    constructor()
     constructor(
         userId: String,
         postId:String,

@@ -1,11 +1,10 @@
-package com.example.letsconnect
+package com.example.letsconnect.repository
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
+import com.example.letsconnect.Resource
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException

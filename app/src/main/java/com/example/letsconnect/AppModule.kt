@@ -26,5 +26,9 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesCurrentUser(): String = FirebaseAuth.getInstance().currentUser!!.uid
+
+    @Provides
+    @Singleton
     fun providesStorageRef(): StorageReference = FirebaseStorage.getInstance().reference
 }

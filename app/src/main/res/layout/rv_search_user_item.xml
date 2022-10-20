@@ -13,14 +13,14 @@
             type="Integer" />
 
         <variable
-            name="OnUserItemClicked"
-            type="com.example.letsconnect.adapters.UsersChatsFirestoreAdapter.OnUserItemClicked" />
+            name="OnSearchUserItemClicked"
+            type="com.example.letsconnect.adapters.AllUsersFirestoreAdapter.OnSearchUserItemClicked" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->OnUserItemClicked.onUserChatClicked(position)}"
+        android:onClick="@{()->OnSearchUserItemClicked.onUserClicked(position)}"
         android:background="@drawable/shape"
         android:layout_margin="2dp"
         android:padding="5dp">

@@ -1,31 +1,30 @@
 package com.example.letsconnect.post
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letsconnect.Resource
-import com.example.letsconnect.repository.FirebaseRepository
+import com.example.letsconnect.repository.PostsRepository
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PostViewModel @Inject constructor(private val repository: FirebaseRepository) : ViewModel() {
+class PostViewModel @Inject constructor(private val repository: PostsRepository) : ViewModel() {
 
     // QuerySnapshot
-    private var _allComments: MutableLiveData<Resource<QuerySnapshot>> = MutableLiveData()
-    val allComments: LiveData<Resource<QuerySnapshot>> = _allComments
+    private var _allComments: MutableStateFlow<Resource<QuerySnapshot>> = MutableStateFlow(Resource.Loading())
+    val allComments: StateFlow<Resource<QuerySnapshot>> = _allComments
 
-     private var _post: MutableLiveData<Resource<DocumentSnapshot>> = MutableLiveData()
-    val post: LiveData<Resource<DocumentSnapshot>> = _post
+     private var _post: MutableStateFlow<Resource<DocumentSnapshot>> = MutableStateFlow(Resource.Loading())
+    val post: StateFlow<Resource<DocumentSnapshot>> = _post
 
      fun getAllComments(postId:String) = viewModelScope.launch(Dispatchers.IO){
-        _allComments.postValue(Resource.Loading())
-        _allComments.postValue(repository.getAllComments(postId))
+        _allComments.emit(repository.getAllComments(postId))
     }
 
     fun addNewComment(postId: String,message:String) = viewModelScope.launch(Dispatchers.IO){
@@ -36,7 +35,8 @@ class PostViewModel @Inject constructor(private val repository: FirebaseReposito
     }
 
     fun getCurrentPost(postId: String) = viewModelScope.launch {
-        _post.postValue(Resource.Loading())
-        _post.postValue(repository.showCurrentPost(postId))
+        _post.emit(repository.showCurrentPost(postId))
     }
+
+
 }

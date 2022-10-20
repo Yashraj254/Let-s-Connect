@@ -73,6 +73,9 @@
         <action
             android:id="@+id/action_navigation_profile_to_navigation_search_users"
             app:destination="@id/navigation_search_users" />
+        <action
+            android:id="@+id/action_navigation_profile_to_postFragment"
+            app:destination="@id/postFragment" />
     </fragment>
     <fragment
         android:id="@+id/navigation_search_users"

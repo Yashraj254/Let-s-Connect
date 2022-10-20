@@ -1,27 +1,21 @@
 package com.example.letsconnect.adapters
 
-import android.content.Context
-import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.letsconnect.models.Comment
-import com.example.letsconnect.R
 import com.example.letsconnect.databinding.RvCommentItemBinding
+import com.example.letsconnect.models.Comment
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import java.security.PrivateKey
 
 
 class AllCommentsFirestoreAdapter(
     private val options: FirestoreRecyclerOptions<Comment>,
-    private val navHostFragment: NavHostFragment,
+    private val onCommentItemClicked: OnCommentItemClicked
+
 ) :
     FirestoreRecyclerAdapter<Comment, RecyclerView.ViewHolder>(options) {
     private var _totalComments: MutableLiveData<Int> = MutableLiveData()
@@ -29,6 +23,8 @@ class AllCommentsFirestoreAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding =
             RvCommentItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        binding.onCommentItemClicked = onCommentItemClicked
+
         return PostViewHolder(binding)
     }
 
@@ -39,8 +35,6 @@ class AllCommentsFirestoreAdapter(
 
     override fun getItemCount(): Int {
         _totalComments.value = super.getItemCount()
-        Log.d("MyTag", "getItemCount: ${ totalComments.value}")
-
         return super.getItemCount()
     }
     inner class PostViewHolder(private val binding: RvCommentItemBinding) :
@@ -53,19 +47,12 @@ class AllCommentsFirestoreAdapter(
                 val image = comment.profileImage
                 if(image!=null)
                     Glide.with(ivProfilePic).load(image).into(ivProfilePic)
-                tvUsermail.setOnClickListener {
-                    val bundle = Bundle()
-                    bundle.putString("selected_userId", comment.userId)
-                    val navController: NavController = navHostFragment.navController
-                    navController.navigate(R.id.action_postFragment_to_navigation_profile, bundle)
-                }
-                tvUsername.setOnClickListener {
-                    val bundle = Bundle()
-                    bundle.putString("selected_userId", comment.userId)
-                    val navController: NavController = navHostFragment.navController
-                    navController.navigate(R.id.action_postFragment_to_navigation_profile, bundle)
-                }
+
             }
         }
+    }
+    interface OnCommentItemClicked {
+        fun onUsernameClicked(position: Int)
+        fun onEmailClicked(position: Int)
     }
 }

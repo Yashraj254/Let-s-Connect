@@ -1,107 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/constraintLayout"
-    android:background="@drawable/shape"
-    android:layout_margin="2dp"
-    android:padding="5dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+    <data>
+        <variable
+            name="post"
+            type="com.example.letsconnect.models.Post" />
 
-    <TextView
-        android:id="@+id/tv_username"
-        android:layout_width="wrap_content"
+        <variable
+            name="position"
+            type="Integer" />
+
+        <variable
+            name="OnPostItemClicked"
+            type="com.example.letsconnect.adapters.AllPostsFirestoreAdapter.OnPostItemClicked" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Username"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/constraintLayout"
+        android:background="@drawable/shape"
+        android:layout_margin="2dp"
+        android:padding="5dp">
 
-    <TextView
-        android:id="@+id/tv_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="User mail"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/tv_username" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_profile"  />
 
-
-
-    <TextView
-        android:id="@+id/tv_upload_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Upload Time"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-    <TextView
-        android:id="@+id/tv_post_message"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="Post Message"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_upload_time" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_post_message">
-
-        <ImageButton
-            android:id="@+id/ibtn_like"
+        <TextView
+            android:id="@+id/tv_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:text="Username"
+            android:onClick="@{()->OnPostItemClicked.onUsernameClicked(position)}"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            android:background="#FFFFFF"
-            app:srcCompat="@drawable/ic_like" />
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="@{()->OnPostItemClicked.onEmailClicked(position)}"
+            android:text="User mail"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@+id/tv_username" />
 
 
         <TextView
-            android:id="@+id/tv_total_likes"
+            android:id="@+id/tv_upload_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-
-            android:layout_marginStart="100dp"
-            android:text="Likes" />
-
-        <ImageButton
-            android:id="@+id/ibtn_comments"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_marginTop="5dp"
-            android:background="#FFFFFF"
-            app:srcCompat="@drawable/ic_comment" />
+            android:text="Upload Time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <TextView
-            android:id="@+id/tv_total_comments"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_post_message"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Comments" />
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:onClick="@{()->OnPostItemClicked.onCommentClicked(position)}"
+            android:text="Post Message"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_upload_time" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_post_message">
+
+            <ImageButton
+                android:id="@+id/ibtn_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:onClick="@{()->OnPostItemClicked.onLikeClicked(position,ibtnLike)}"
+                android:background="#FFFFFF"
+                app:srcCompat="@drawable/ic_like" />
+
+
+            <TextView
+                android:id="@+id/tv_total_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+
+                android:layout_marginStart="100dp"
+                android:text="Likes" />
+
+            <ImageButton
+                android:id="@+id/ibtn_comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->OnPostItemClicked.onCommentClicked(position)}"
+                android:layout_margin="5dp"
+                android:layout_marginTop="5dp"
+                android:background="#FFFFFF"
+                app:srcCompat="@drawable/ic_comment" />
+
+            <TextView
+                android:id="@+id/tv_total_comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->OnPostItemClicked.onCommentClicked(position)}"
+                android:layout_margin="5dp"
+                android:text="Comments" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

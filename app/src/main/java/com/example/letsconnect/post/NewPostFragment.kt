@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.letsconnect.databinding.FragmentNewPostBinding
+import com.example.letsconnect.showSnackBar
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,16 +24,26 @@ class NewPostFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentNewPostBinding.inflate(layoutInflater, container, false)
         requireActivity().title = "New Post"
-        binding.btnAddPost.setOnClickListener {
-            addNewPost(binding.etPostMessage.text.toString())
-        }
+
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+            binding.btnAddPost.setOnClickListener {
+                if (!binding.etPostMessage.text.isNullOrBlank())
+                {
+                    addNewPost(binding.etPostMessage.text.toString())
+                    binding.etPostMessage.text = null
+                    showSnackBar("Post Uploaded.")
+                }
+            }
+    }
     private fun addNewPost(message: String) {
         viewModel.addNewPost(message)
     }

@@ -2,12 +2,14 @@ package com.example.letsconnect.home
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageButton
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.letsconnect.R
 import com.example.letsconnect.Resource
@@ -16,18 +18,23 @@ import com.example.letsconnect.databinding.FragmentHomeBinding
 import com.example.letsconnect.models.Post
 import com.example.letsconnect.showSnackBar
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.firebase.ui.firestore.ObservableSnapshotArray
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(), MenuProvider {
+class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostItemClicked {
 
     private var _binding: FragmentHomeBinding? = null
     private lateinit var adapter: AllPostsFirestoreAdapter
     private var menu: Menu? = null
     private lateinit var navBar: BottomNavigationView
     private val viewModel: HomeViewModel by activityViewModels()
+    private lateinit var arr: ObservableSnapshotArray<Post>
+
+    @Inject
+    lateinit var currentUser: String
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -50,7 +57,7 @@ class HomeFragment : Fragment(), MenuProvider {
         viewModel.getAllPosts()
         setRecyclerView()
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
+        binding.retryButton.setOnClickListener { viewModel.getAllPosts() }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -61,39 +68,51 @@ class HomeFragment : Fragment(), MenuProvider {
 
     private fun setRecyclerView() {
         viewModel.getAllPosts()
-        viewModel.allPosts.observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Error -> {
-                    showSnackBar(message = it.message!!)
-                }
-                is Resource.Loading -> {
-                }
-                is Resource.Success -> {
-                    if (!it.data!!.isEmpty) {
-                        val options = FirestoreRecyclerOptions.Builder<Post>()
-                            .setQuery(it.data.query, Post::class.java)
-                            .build()
-                        binding.rvAllPosts.layoutManager = LinearLayoutManager(context)
-                        val navHostFragment =
-                            requireActivity().supportFragmentManager.findFragmentById(R.id.container_fragment) as NavHostFragment
-                        adapter =
-                            AllPostsFirestoreAdapter(options, navHostFragment,"Home")
-                        binding.rvAllPosts.adapter = adapter
-                        adapter.startListening()
+        lifecycleScope.launchWhenCreated {
+            viewModel.allPosts.collect{
+                when (it) {
+                    is Resource.Error -> {
+                        showSnackBar(message = it.message!!)
+                        binding.apply {
+                            statusBox.isVisible = true
+                            rvAllPosts.isVisible = false
+                            pbLoading.isVisible = false
+                        }
+                    }
+                    is Resource.Loading -> {
+                        binding.apply {
+                            statusBox.isVisible = false
+                            rvAllPosts.isVisible = false
+                            pbLoading.isVisible = true
+                        }
+                    }
+                    is Resource.Success -> {
+                        binding.apply {
+                            statusBox.isVisible = false
+                            pbLoading.isVisible = false
+                        }
+                        if (!it.data!!.isEmpty) {
+                            binding.rvAllPosts.isVisible = true
+                            val options = FirestoreRecyclerOptions.Builder<Post>()
+                                .setQuery(it.data.query, Post::class.java)
+                                .build()
+                            arr = options.snapshots
+                            binding.rvAllPosts.layoutManager = LinearLayoutManager(context)
+                            adapter =
+                                AllPostsFirestoreAdapter(options,  this@HomeFragment)
+                            binding.rvAllPosts.adapter = adapter
+                            adapter.startListening()
 
+                        }
                     }
                 }
-            }
 
+            }
         }
 
+
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (this::adapter.isInitialized)
-            adapter.stopListening()
-    }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         this.menu = menu
@@ -112,7 +131,46 @@ class HomeFragment : Fragment(), MenuProvider {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (this::adapter.isInitialized)
+            adapter.stopListening()
         _binding = null
+    }
+
+    override fun onLikeClicked(position: Int, imageButton: ImageButton) {
+        val list = arr[position].likedBy
+        viewModel.likePost(arr[position])
+        if (list.contains(currentUser)) {
+            imageButton.setImageResource(R.drawable.ic_like)
+        } else {
+            imageButton.setImageResource(R.drawable.ic_liked_post)
+
+        }
+
+    }
+
+    private fun sendData(post: Post) {
+        val bundle = Bundle()
+        bundle.putString("selected_userId", post.userId)
+        Navigation.findNavController(requireView())
+            .navigate(R.id.action_navigation_home_to_navigation_profile,
+                bundle)
+
+    }
+
+    override fun onCommentClicked(position: Int) {
+        val bundle = Bundle()
+        bundle.putString("selected_postId", arr[position].postId)
+        Navigation.findNavController(requireView())
+            .navigate(R.id.action_navigation_home_to_postFragment,
+                bundle)
+    }
+
+    override fun onUsernameClicked(position: Int) {
+        sendData(arr[position])
+    }
+
+    override fun onEmailClicked(position: Int) {
+        sendData(arr[position])
     }
 
 }
