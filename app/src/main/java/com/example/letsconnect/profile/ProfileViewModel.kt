@@ -31,10 +31,12 @@ class ProfileViewModel @Inject constructor(private val repository: UserRepositor
     val following: StateFlow<Resource<QuerySnapshot>> = _following
 
     fun getCurrentUserPosts(userId: String) = viewModelScope.launch(Dispatchers.IO) {
+        _currentUserPosts.emit(Resource.Loading())
         _currentUserPosts.emit(repo.showCurrentUserPosts(userId))
     }
 
     fun getCurrentUserDetails(userId: String) = viewModelScope.launch(Dispatchers.IO) {
+        _currentUserDetails.emit(Resource.Loading())
         _currentUserDetails.emit(repository.showCurrentUserDetails(userId))
     }
 
@@ -43,6 +45,7 @@ class ProfileViewModel @Inject constructor(private val repository: UserRepositor
     }
 
     fun checkIfFollowing(userId: String) = viewModelScope.launch(Dispatchers.IO) {
+        _following.emit(Resource.Loading())
         _following.emit(repository.checkIfFollowing(userId))
     }
 
@@ -50,7 +53,11 @@ class ProfileViewModel @Inject constructor(private val repository: UserRepositor
         repo.likePost(post)
     }
 
-     fun uploadProfilePic(encodedImage:ByteArray) = viewModelScope.launch(Dispatchers.IO) {
+    fun unfollowUser(userId:String)= viewModelScope.launch(Dispatchers.IO){
+        repository.unfollowUser(userId)
+    }
+
+    fun uploadProfilePic(encodedImage:ByteArray) = viewModelScope.launch(Dispatchers.IO) {
         repository.uploadProfilePic(encodedImage)
     }
 }

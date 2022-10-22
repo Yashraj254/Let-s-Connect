@@ -13,9 +13,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
 
 class AllCommentsFirestoreAdapter(
-    private val options: FirestoreRecyclerOptions<Comment>,
+    options: FirestoreRecyclerOptions<Comment>,
     private val onCommentItemClicked: OnCommentItemClicked
-
 ) :
     FirestoreRecyclerAdapter<Comment, RecyclerView.ViewHolder>(options) {
     private var _totalComments: MutableLiveData<Int> = MutableLiveData()
@@ -29,17 +28,19 @@ class AllCommentsFirestoreAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Comment) {
-        (holder as PostViewHolder).bind(model)
-
+        (holder as PostViewHolder).bind(model,position)
     }
 
     override fun getItemCount(): Int {
         _totalComments.value = super.getItemCount()
         return super.getItemCount()
     }
+
     inner class PostViewHolder(private val binding: RvCommentItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(comment: Comment) {
+        fun bind(comment: Comment,position: Int) {
+            binding.position = position
+            binding.comment = comment
             binding.apply {
                 tvUsername.text = comment.username
                 tvUsermail.text = comment.email
@@ -47,7 +48,6 @@ class AllCommentsFirestoreAdapter(
                 val image = comment.profileImage
                 if(image!=null)
                     Glide.with(ivProfilePic).load(image).into(ivProfilePic)
-
             }
         }
     }

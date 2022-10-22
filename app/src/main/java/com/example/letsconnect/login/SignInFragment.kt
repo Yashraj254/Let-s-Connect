@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.letsconnect.MainActivity
 import com.example.letsconnect.R
 import com.example.letsconnect.databinding.FragmentSignInBinding
+import com.example.letsconnect.showSnackBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -48,10 +49,7 @@ class SignInFragment : Fragment() {
     private fun setListeners() {
 
         binding.createNew.setOnClickListener {
-            //startActivity(Intent(requireActivity(),MainActivity::class.java))
-
-            val action = SignInFragmentDirections.actionSignInFragmentToSignUpFragment()
-            findNavController().navigate(action)
+            Navigation.findNavController(requireView()).navigate(R.id.action_signInFragment_to_signUpFragment)
         }
         binding.buttonSignIn.setOnClickListener {
             if (isValidSignInDetails()) {
@@ -70,7 +68,8 @@ class SignInFragment : Fragment() {
 
                 startActivity(Intent(requireActivity(), MainActivity::class.java))        }
             .addOnFailureListener {
-                showToast("Sign In Failed")
+                showSnackBar("Sign In Failed")
+                loading(false)
             }
 
     }

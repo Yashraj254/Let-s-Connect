@@ -11,7 +11,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 
 class ChatsFirestoreAdapter(
-    private val options: FirestoreRecyclerOptions<ChatMessage>
+    options: FirestoreRecyclerOptions<ChatMessage>
 ) :
     FirestoreRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder>(options) {
     private var ITEM_SENT = 1

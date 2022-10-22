@@ -28,7 +28,7 @@
             android:layout_height="70dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_profile" />
+            app:srcCompat="@drawable/ic_profile_pic" />
 
         <TextView
             android:id="@+id/tv_username"

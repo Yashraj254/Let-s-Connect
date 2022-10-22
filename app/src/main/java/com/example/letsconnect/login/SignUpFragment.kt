@@ -17,6 +17,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.trusted.sharing.ShareTarget.FileFormField.KEY_NAME
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.letsconnect.*
 import com.example.letsconnect.databinding.FragmentSignUpBinding
@@ -59,8 +60,8 @@ class SignUpFragment : Fragment() {
 
     private fun setListeners() {
         binding.textSignIn.setOnClickListener {
-            val action = SignUpFragmentDirections.actionSignUpFragmentToSignInFragment()
-            findNavController().navigate(action)
+
+            Navigation.findNavController(requireView()).navigate(R.id.action_signUpFragment_to_signInFragment)
          //   startActivity(Intent(requireActivity(), MainActivity::class.java))
         }
 
@@ -107,7 +108,9 @@ class SignUpFragment : Fragment() {
                       showToast("Account Created")
                       startActivity(Intent(requireActivity(), MainActivity::class.java))        }
                   .addOnFailureListener {
-                      showToast("SignUp Failed")
+                      showSnackBar("SignUp Failed")
+                      loading(false)
+
                   }
 
     }

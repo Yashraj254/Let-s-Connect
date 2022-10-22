@@ -109,8 +109,6 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
 
             }
         }
-
-
     }
 
 
@@ -120,12 +118,9 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.usersChatFragment -> {
-                Navigation.findNavController(requireView())
-                    .navigate(R.id.action_navigation_home_to_usersChatFragment)
-            }
-        }
+        Navigation.findNavController(requireView())
+            .navigate(R.id.action_navigation_home_to_usersChatFragment)
+
         return false
     }
 
@@ -143,9 +138,7 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
             imageButton.setImageResource(R.drawable.ic_like)
         } else {
             imageButton.setImageResource(R.drawable.ic_liked_post)
-
         }
-
     }
 
     private fun sendData(post: Post) {
@@ -154,7 +147,6 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
         Navigation.findNavController(requireView())
             .navigate(R.id.action_navigation_home_to_navigation_profile,
                 bundle)
-
     }
 
     override fun onCommentClicked(position: Int) {

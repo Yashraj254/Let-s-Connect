@@ -1,6 +1,7 @@
 package com.example.letsconnect.post
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,13 +27,15 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
 
     private var _binding: FragmentPostBinding? = null
     private lateinit var adapter: AllCommentsFirestoreAdapter
-    private lateinit var postId: String
+
     private lateinit var navBar: BottomNavigationView
     private val viewModel: PostViewModel by activityViewModels()
     private lateinit var options: FirestoreRecyclerOptions<Comment>
     private lateinit var arr: ObservableSnapshotArray<Comment>
+
     @Inject
     lateinit var currentUser: String
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -49,9 +52,9 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
         super.onViewCreated(view, savedInstanceState)
         requireActivity().title = "Comments"
 
-        postId = arguments?.getString("selected_postId").toString()
+       val postId = arguments?.getString("selected_postId").toString()
         showCurrentPost(postId)
-        setRecyclerView()
+
         binding.btnComment.setOnClickListener {
             val message = binding.etComment.text.toString()
             if (message.isNotEmpty())
@@ -66,13 +69,13 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
             viewModel.getAllComments(postId)
             viewModel.getCurrentPost(postId)
         }
-
     }
 
     private fun showCurrentPost(postId: String) {
         viewModel.getCurrentPost(postId)
         lifecycleScope.launchWhenCreated {
             viewModel.post.collect {
+
                 when (it) {
                     is Resource.Error -> {
                         showSnackBar(message = it.message!!)
@@ -99,17 +102,22 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
                             btnComment.isVisible = true
                         }
                         if (it.data!!.exists()) {
-                            val list = it.data.get("likedBy") as ArrayList<String>
+
+                            var list = ArrayList<String>()
+                            if (it.data.get("likedBy").toString().isNotEmpty())
+                                list = it.data.get("likedBy") as ArrayList<String>
                             binding.apply {
-                                detailsLayout.isVisible = true
                                 tvUsername.text = it.data.getString(KEY_USER_NAME)
                                 tvEmail.text = it.data.getString(KEY_EMAIL)
                                 tvPostMessage.text = it.data.getString(KEY_POST_MESSAGE)
-                                tvUploadTime.text = Utils.getTimeAgo(it.data.getLong(KEY_UPLOAD_TIME)!!)
+                                tvUploadTime.text =
+                                    Utils.getTimeAgo(it.data.getLong(KEY_UPLOAD_TIME)!!)
                                 tvTotalLikes.text = it.data.getLong(KEY_TOTAL_LIKES).toString()
-                                if(list.contains(currentUser)){
+                                detailsLayout.isVisible = true
+                                setRecyclerView(postId)
+                                if (list.contains(currentUser)) {
                                     ibtnLike.setImageResource(R.drawable.ic_liked_post)
-                                }else
+                                } else
                                     ibtnLike.setImageResource(R.drawable.ic_like)
                                 val image = it.data.getString(KEY_PROFILE_IMAGE)
                                 if (image != null)
@@ -131,48 +139,49 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
         scrollToLast()
     }
 
-    private fun setRecyclerView() {
+    private fun setRecyclerView(postId: String) {
         viewModel.getAllComments(postId)
         lifecycleScope.launchWhenCreated {
             viewModel.allComments.collect {
-            when (it) {
-                is Resource.Error -> {
-                    binding.apply {
-                        statusBox.isVisible = true
-                        rvAllComments.isVisible = false
-                        pbLoading.isVisible = false
+                when (it) {
+                    is Resource.Error -> {
+                        binding.apply {
+                            statusBox.isVisible = true
+                            rvAllComments.isVisible = false
+                            pbLoading.isVisible = false
+                        }
                     }
-                }
-                is Resource.Loading -> {
-                    binding.apply {
-                        statusBox.isVisible = false
-                        rvAllComments.isVisible = false
-                        pbLoading.isVisible = true
+                    is Resource.Loading -> {
+                        binding.apply {
+                            statusBox.isVisible = false
+                            rvAllComments.isVisible = false
+                            pbLoading.isVisible = true
+                        }
                     }
-                }
-                is Resource.Success -> {
-                    binding.apply {
-                        statusBox.isVisible = false
-                        pbLoading.isVisible = false
-                    }
+                    is Resource.Success -> {
+                        binding.apply {
+                            statusBox.isVisible = false
+                            pbLoading.isVisible = false
+                        }
 
-                    if (!it.data!!.isEmpty) {
-                        binding.rvAllComments.isVisible = true
-                        options =
-                            FirestoreRecyclerOptions.Builder<Comment>()
-                                .setQuery(it.data.query, Comment::class.java).build()
-                        binding.rvAllComments.layoutManager = LinearLayoutManager(context)
-                        arr = options.snapshots
+                        if (!it.data!!.isEmpty) {
 
-                        adapter =
-                            AllCommentsFirestoreAdapter(options, this@PostFragment)
-                        adapter.startListening()
-                        binding.rvAllComments.adapter = adapter
-                        binding.adapter = adapter
+                            binding.rvAllComments.isVisible = true
+                            options =
+                                FirestoreRecyclerOptions.Builder<Comment>()
+                                    .setQuery(it.data.query, Comment::class.java).build()
+                            binding.rvAllComments.layoutManager = LinearLayoutManager(context)
+                            arr = options.snapshots
+
+                            adapter =
+                                AllCommentsFirestoreAdapter(options, this@PostFragment)
+                            adapter.startListening()
+                            binding.rvAllComments.adapter = adapter
+                            binding.adapter = adapter
+                        }
                     }
                 }
             }
-        }
         }
     }
 
@@ -183,12 +192,15 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (this::adapter.isInitialized)
+        if (this::adapter.isInitialized) {
             adapter.stopListening()
+            Log.d("MyTag", "onDestroyView: ")
+        }
         navBar.visibility = View.VISIBLE
+        _binding = null
     }
 
-    private fun sendData(position:Int) {
+    private fun sendData(position: Int) {
         val bundle = Bundle()
         bundle.putString("selected_userId", arr[position].userId)
         Navigation.findNavController(requireView())
@@ -202,6 +214,5 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
     override fun onEmailClicked(position: Int) {
         sendData(position)
     }
-
 
 }

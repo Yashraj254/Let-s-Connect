@@ -22,7 +22,6 @@ class UsersChatsFirestoreAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: Users) {
         (holder as UserChatViewHolder).bind(model,position)
-
     }
 
     inner class UserChatViewHolder(private val binding: RvUserItemBinding) :

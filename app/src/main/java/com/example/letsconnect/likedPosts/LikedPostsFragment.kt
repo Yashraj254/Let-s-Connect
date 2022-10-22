@@ -95,10 +95,8 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
                             binding.lottieNoLikedPost.isVisible = true
                             binding.tvNoPost.isVisible = true
                         }
-
                     }
                 }
-
             }
         }
     }
@@ -119,7 +117,6 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
 
     override fun onLikeClicked(position: Int, imageButton: ImageButton) {
         viewModel.likePost(arr[position])
-
     }
 
     private fun sendData(post: Post) {
@@ -128,7 +125,6 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
         Navigation.findNavController(requireView())
             .navigate(R.id.action_navigation_liked_posts_to_postFragment,
                 bundle)
-
     }
 
     override fun onCommentClicked(position: Int) {

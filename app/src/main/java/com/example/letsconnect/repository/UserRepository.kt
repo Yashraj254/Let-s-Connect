@@ -13,13 +13,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class UserRepository  @Inject constructor(
+class UserRepository @Inject constructor(
     private val database: FirebaseFirestore,
     private var storageRef: StorageReference,
     private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context,
 ) : BaseRepo(context) {
-
+    @Inject
+    lateinit var currentUser: String
     suspend fun getAllFollowers(userId: String): Resource<QuerySnapshot> = safeApiCall {
         database.collection("users").document(userId)
             .collection("followers").get()
@@ -35,16 +36,42 @@ class UserRepository  @Inject constructor(
         database.collection(KEY_COLLECTION_USERS).document(userId).get()
     }
 
-    suspend fun followUser(userId: String, user: HashMap<String, Any>) = safeApiCall {
-        database.collection(KEY_COLLECTION_USERS).document(auth.currentUser!!.uid)
-            .collection("following")
-            .document(userId).set(user).onSuccessTask {
-                database.collection(KEY_COLLECTION_USERS).document(auth.currentUser!!.uid)
+    suspend fun unfollowUser(userId: String) = safeApiCall{
+        database.collection("users").document(currentUser)
+            .collection("following").document(userId).delete().onSuccessTask {
+                database.collection("users").document(currentUser)
                     .collection("following").get().onSuccessTask {
                         val following = HashMap<String, Any>()
                         following[KEY_FOLLOWING] = it.size()
-                        database.collection(KEY_COLLECTION_USERS).document(auth.currentUser!!.uid)
+                        database.collection(KEY_COLLECTION_USERS).document(currentUser)
                             .update(following)
+                    }
+            }
+    }
+
+    suspend fun removeFollower(userId: String) = safeApiCall {
+        database.collection("users").document(currentUser)
+            .collection("followers").document(userId).delete().onSuccessTask {
+                database.collection("users").document(currentUser)
+                    .collection("followers").get().onSuccessTask {
+                        val following = HashMap<String, Any>()
+                        following[KEY_FOLLOWING] = it.size()
+                        database.collection(KEY_COLLECTION_USERS).document(currentUser)
+                            .update(following)
+                    }
+            }
+    }
+
+    suspend fun followUser(userId: String, user: HashMap<String, Any>) = safeApiCall {
+        database.collection(KEY_COLLECTION_USERS).document(currentUser)
+            .collection("following")
+            .document(userId).set(user).onSuccessTask {
+                database.collection(KEY_COLLECTION_USERS).document(currentUser)
+                    .collection("followers").get().onSuccessTask {
+                        val followers = HashMap<String, Any>()
+                        followers[KEY_FOLLOWERS] = it.size()
+                        database.collection(KEY_COLLECTION_USERS).document(currentUser)
+                            .update(followers)
                     }
             }
 
@@ -61,10 +88,11 @@ class UserRepository  @Inject constructor(
     }
 
     suspend fun checkIfFollowing(userId: String): Resource<QuerySnapshot> = safeApiCall {
-        database.collection(KEY_COLLECTION_USERS).document(auth.currentUser!!.uid)
+        database.collection(KEY_COLLECTION_USERS).document(currentUser)
             .collection("following")
             .get()
     }
+
     suspend fun getAllUsers(): Resource<QuerySnapshot> = safeApiCall {
         database.collection("users").get()
     }
@@ -89,15 +117,17 @@ class UserRepository  @Inject constructor(
     }
 
     suspend fun getAllChats(senderRoom: String): Resource<QuerySnapshot> = safeApiCall {
-        database.collection("chats").document(senderRoom).collection("message").orderBy("timeStamp").get()
+        database.collection("chats").document(senderRoom).collection("message").orderBy("timeStamp")
+            .get()
     }
 
-    suspend fun uploadProfilePic(encodedImage:ByteArray) = safeApiCall{
+    suspend fun uploadProfilePic(encodedImage: ByteArray) = safeApiCall {
         storageRef.putBytes(encodedImage).addOnSuccessListener {
             storageRef.downloadUrl.addOnSuccessListener {
                 val obj = mutableMapOf<String, String>()
                 obj[KEY_PROFILE_IMAGE] = it.toString()
-                database.collection("users").document(auth.currentUser!!.uid).update(obj as Map<String, Any>).addOnSuccessListener {
+                database.collection("users").document(currentUser)
+                    .update(obj as Map<String, Any>).addOnSuccessListener {
                     Toast.makeText(context, "Profile Picture Uploaded", Toast.LENGTH_SHORT).show()
                 }
             }

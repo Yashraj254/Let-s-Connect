@@ -13,15 +13,13 @@
             type="Integer" />
 
         <variable
-            name="OnSearchUserItemClicked"
-            type="com.example.letsconnect.adapters.AllUsersFirestoreAdapter.OnSearchUserItemClicked" />
+            name="OnFollowItemClicked"
+            type="com.example.letsconnect.adapters.FollowFirestoreAdapter.OnFollowItemClicked" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{()->OnSearchUserItemClicked.onUserClicked(position)}"
-
         android:background="@drawable/shape"
         android:layout_margin="2dp"
         android:padding="5dp">
@@ -31,6 +29,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
+            android:onClick="@{()->OnFollowItemClicked.onUserClicked(position)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/ic_profile_pic" />
@@ -39,6 +38,7 @@
             android:id="@+id/tv_chat_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->OnFollowItemClicked.onUserClicked(position)}"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="3dp"
             android:text="Username"
@@ -51,10 +51,19 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginBottom="3dp"
+            android:onClick="@{()->OnFollowItemClicked.onUserClicked(position)}"
             android:text="Email"
             app:layout_constraintBottom_toBottomOf="@+id/iv_profile_image"
             app:layout_constraintStart_toEndOf="@+id/iv_profile_image" />
 
-
+        <Button
+            android:id="@+id/btn_follows"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->OnFollowItemClicked.onFollowsClicked(position)}"
+            android:text="Button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

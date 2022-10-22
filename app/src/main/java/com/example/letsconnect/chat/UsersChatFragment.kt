@@ -98,7 +98,7 @@ class UsersChatFragment : Fragment(), UsersChatsFirestoreAdapter.OnUserItemClick
 
     override fun onDestroyView() {
         super.onDestroyView()
-        navBar.visibility = View.VISIBLE
+//        navBar.visibility = View.VISIBLE
         if (this::adapter.isInitialized)
             adapter.stopListening()
         _binding = null

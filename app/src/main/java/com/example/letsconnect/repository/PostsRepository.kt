@@ -46,6 +46,7 @@ class PostsRepository @Inject constructor(
         database.collection(KEY_COLLECTION_USERS).document(auth.currentUser!!.uid).get()
             .onSuccessTask {
                 val date = Date()
+                val list = ArrayList<String>()
                 val username = it.getString(KEY_USER_NAME)
                 val userId = auth.currentUser!!.uid
                 val profileImage = it.getString(KEY_PROFILE_IMAGE)
@@ -61,6 +62,7 @@ class PostsRepository @Inject constructor(
                 post[KEY_TOTAL_LIKES] = 0
                 post[KEY_UPLOAD_TIME] = date.time
                 post[KEY_POST_MESSAGE] = postMessage
+                post["likedBy"] = list
                 val postId = database.collection(KEY_ALL_POSTS).document()
                 post["postId"] = postId.id
                 postId.set(post).addOnSuccessListener {

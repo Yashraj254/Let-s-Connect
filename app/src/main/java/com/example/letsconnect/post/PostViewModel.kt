@@ -24,7 +24,8 @@ class PostViewModel @Inject constructor(private val repository: PostsRepository)
     val post: StateFlow<Resource<DocumentSnapshot>> = _post
 
      fun getAllComments(postId:String) = viewModelScope.launch(Dispatchers.IO){
-        _allComments.emit(repository.getAllComments(postId))
+         _allComments.emit(Resource.Loading())
+         _allComments.emit(repository.getAllComments(postId))
     }
 
     fun addNewComment(postId: String,message:String) = viewModelScope.launch(Dispatchers.IO){
@@ -35,6 +36,7 @@ class PostViewModel @Inject constructor(private val repository: PostsRepository)
     }
 
     fun getCurrentPost(postId: String) = viewModelScope.launch {
+        _post.emit(Resource.Loading())
         _post.emit(repository.showCurrentPost(postId))
     }
 

@@ -48,13 +48,14 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navBar = requireActivity().findViewById(R.id.nav_view)
+        navBar.visibility = View.GONE
+
         senderUid = currentUser
         receiverUid = arguments?.getString("receiver_id")!!
         receiverName = arguments?.getString("receiver_name")!!
         requireActivity().title = receiverName
         senderRoom = senderUid + receiverUid
         receiverRoom = receiverUid + senderUid
-        navBar.visibility = View.GONE
         setRecyclerView()
 
         binding.ibSend.setOnClickListener {
@@ -63,7 +64,6 @@ class ChatFragment : Fragment() {
                 binding.etChatMessage.text = null
             }
         }
-
     }
 
     private fun setRecyclerView() {
@@ -95,12 +95,6 @@ class ChatFragment : Fragment() {
                         }
 
                         if (!it.data!!.isEmpty) {
-                            binding.apply {
-                                rvAllChats.isVisible = true
-                                etChatMessage.isVisible = true
-                                ibSend.isVisible = true
-                            }
-
                             val options: FirestoreRecyclerOptions<ChatMessage> =
                                 FirestoreRecyclerOptions.Builder<ChatMessage>()
                                     .setQuery(it.data.query, ChatMessage::class.java).build()
@@ -109,24 +103,23 @@ class ChatFragment : Fragment() {
                             adapter = ChatsFirestoreAdapter(options)
                             binding.rvAllChats.adapter = adapter
                             adapter.startListening()
+                            binding.apply {
+                                rvAllChats.isVisible = true
+                                etChatMessage.isVisible = true
+                                ibSend.isVisible = true
+                            }
 
                         }
                     }
                 }
             }
         }
-
     }
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
-        navBar.visibility = View.VISIBLE
         if (this::adapter.isInitialized)
             adapter.stopListening()
         _binding = null
-
     }
 }

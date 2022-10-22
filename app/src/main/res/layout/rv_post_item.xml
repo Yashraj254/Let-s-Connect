@@ -30,9 +30,10 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="5dp"
+            android:onClick="@{()->OnPostItemClicked.onUsernameClicked(position)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_profile"  />
+            android:src="@drawable/ic_profile_pic"  />
 
         <TextView
             android:id="@+id/tv_username"
