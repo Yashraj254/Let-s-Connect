@@ -11,7 +11,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
 class UsersChatsFirestoreAdapter(
     options: FirestoreRecyclerOptions<Users>,
-    private val userItemClicked: OnUserItemClicked
+    private val userItemClicked: OnUserItemClicked,
+    private val map: Map<String,Users>
 ) :
     FirestoreRecyclerAdapter<Users, RecyclerView.ViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,9 +31,10 @@ class UsersChatsFirestoreAdapter(
         fun bind(user: Users,position: Int) {
             binding.users = user
             binding.position = position
+            val data = map[user.userId]
             binding.apply {
-                tvChatUserName.text = user.username
-                tvChatUserEmail.text = user.email
+                tvChatName.text = data?.name
+                tvChatUserName.text = data?.username
                 val image = user.profileImage
                 if (image != null)
                     Glide.with(ivProfileImage).load(image).into(ivProfileImage)

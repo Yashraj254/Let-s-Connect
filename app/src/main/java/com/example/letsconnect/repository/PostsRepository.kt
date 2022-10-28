@@ -27,7 +27,6 @@ class PostsRepository @Inject constructor(
         database.collection(KEY_ALL_POSTS).document(postId).get()
     }
 
-
     suspend fun getAllPosts(): Resource<QuerySnapshot> = safeApiCall {
         allPostRef.orderBy("uploadTime", Query.Direction.DESCENDING).get()
     }
@@ -37,6 +36,14 @@ class PostsRepository @Inject constructor(
             .collection("likedPosts").orderBy("uploadTime", Query.Direction.DESCENDING).get()
     }
 
+    suspend fun deletePost(postId: String) = safeApiCall {
+        database.collection(KEY_ALL_POSTS).document(postId).delete()
+        database.collection(KEY_COLLECTION_USERS).document(currentUser)
+            .collection("myPosts").document(postId).delete()
+        database.collection("users").document(currentUser)
+            .collection("likedPosts").document(postId).delete()
+
+    }
     suspend fun showCurrentUserPosts(userId: String): Resource<QuerySnapshot> = safeApiCall {
         database.collection(KEY_COLLECTION_USERS).document(userId)
             .collection("myPosts").get()

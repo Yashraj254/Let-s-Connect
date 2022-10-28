@@ -1,6 +1,7 @@
 package com.example.letsconnect.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.example.letsconnect.models.Users
 import com.example.letsconnect.search.SearchViewModel
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QuerySnapshot
@@ -53,7 +55,8 @@ class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowIte
         title = requireArguments().getString("fragment")!!
         val userId = requireArguments().getString("userId")!!
 
-        requireActivity().title = title
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = title
         navBar = requireActivity().findViewById(R.id.nav_view)
         if (title == "Followers" || title == "Following") {
             navBar.visibility = View.GONE
@@ -103,14 +106,24 @@ class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowIte
 
                 if (!resource.data!!.isEmpty) {
                     binding.rvSearch.isVisible = true
-                    val options: FirestoreRecyclerOptions<Users> =
-                        FirestoreRecyclerOptions.Builder<Users>()
-                            .setQuery(resource.data.query, Users::class.java).build()
-                    arr = options.snapshots
-                    binding.rvSearch.layoutManager = LinearLayoutManager(context)
-                    adapter = FollowFirestoreAdapter(options, this, btnText)
-                    binding.rvSearch.adapter = adapter
-                    adapter.startListening()
+                    lifecycleScope.launchWhenCreated {
+                        viewModel.getAllUserProfiles()
+                        viewModel.allUserProfiles.collect{
+                            if(it.isNotEmpty()) {
+                                val options: FirestoreRecyclerOptions<Users> =
+                                    FirestoreRecyclerOptions.Builder<Users>()
+                                        .setQuery(resource.data.query, Users::class.java).build()
+                                arr = options.snapshots
+                                binding.rvSearch.layoutManager = LinearLayoutManager(context)
+                                adapter = FollowFirestoreAdapter(options,
+                                    this@FollowerFollowingFragment,
+                                    btnText,
+                                    it)
+                                binding.rvSearch.adapter = adapter
+                                adapter.startListening()
+                            }
+                        }
+                    }
                 }
             }
         }

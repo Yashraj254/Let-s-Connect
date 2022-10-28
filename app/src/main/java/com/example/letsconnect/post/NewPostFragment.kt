@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.example.letsconnect.R
 import com.example.letsconnect.databinding.FragmentNewPostBinding
 import com.example.letsconnect.showSnackBar
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,14 +29,14 @@ class NewPostFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentNewPostBinding.inflate(layoutInflater, container, false)
-        requireActivity().title = "New Post"
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "New Post"
             binding.btnAddPost.setOnClickListener {
                 if (!binding.etPostMessage.text.isNullOrBlank())
                 {

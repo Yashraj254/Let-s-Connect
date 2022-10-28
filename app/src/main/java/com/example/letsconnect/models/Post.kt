@@ -7,6 +7,7 @@ class Post {
         postId:String,
         profileImage:String?,
         username: String?,
+        name: String?,
         email: String?,
         totalViews: Int,
         uploadTime: Long,
@@ -18,6 +19,7 @@ class Post {
         this.userId = userId
         this.postId = postId
         this.username = username
+        this.name = name
         this.email = email
         this.profileImage = profileImage
         this.totalViews = totalViews
@@ -31,6 +33,7 @@ class Post {
     lateinit var userId: String
     lateinit var postId: String
     var username: String? = null
+    var name: String? = null
     var email: String? = null
     var profileImage:String? = null
     var totalViews: Int = 0

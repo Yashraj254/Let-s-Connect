@@ -18,6 +18,7 @@ import com.example.letsconnect.databinding.FragmentPostBinding
 import com.example.letsconnect.models.Comment
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -50,8 +51,8 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().title = "Comments"
-
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "Comments"
        val postId = arguments?.getString("selected_postId").toString()
         showCurrentPost(postId)
 

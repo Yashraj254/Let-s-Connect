@@ -18,6 +18,7 @@ import com.example.letsconnect.models.Users
 import com.example.letsconnect.showSnackBar
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -32,6 +33,7 @@ class UsersChatFragment : Fragment(), UsersChatsFirestoreAdapter.OnUserItemClick
     private lateinit var adapter: UsersChatsFirestoreAdapter
     private lateinit var navBar: BottomNavigationView
     private val viewModel: ChatViewModel by activityViewModels()
+
     private lateinit var arr: ObservableSnapshotArray<Users>
 
     override fun onCreateView(
@@ -46,7 +48,10 @@ class UsersChatFragment : Fragment(), UsersChatsFirestoreAdapter.OnUserItemClick
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().title = "All Chats"
+
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "All Chats"
+
         navBar = requireActivity().findViewById(R.id.nav_view)
         navBar.visibility = View.GONE
         setRecyclerView(currentUser)
@@ -84,10 +89,15 @@ class UsersChatFragment : Fragment(), UsersChatsFirestoreAdapter.OnUserItemClick
                                     .setQuery(it.data.query, Users::class.java)
                                     .build()
                             arr = options.snapshots
-                            binding.rvUsersChats.layoutManager = LinearLayoutManager(context)
-                            adapter = UsersChatsFirestoreAdapter(options, this@UsersChatFragment)
-                            binding.rvUsersChats.adapter = adapter
-                            adapter.startListening()
+                            viewModel.getAllUserProfiles()
+                            viewModel.allUserProfiles.collect{ map ->
+                                if(map.isNotEmpty()){
+                                    binding.rvUsersChats.layoutManager = LinearLayoutManager(context)
+                                    adapter = UsersChatsFirestoreAdapter(options, this@UsersChatFragment,map)
+                                    binding.rvUsersChats.adapter = adapter
+                                    adapter.startListening()
+                                }
+                            }
                         }
                     }
                 }

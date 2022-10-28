@@ -5,6 +5,7 @@ class Comment {
     constructor(
         userId: String,
         profileImage:String?,
+        name:String?,
         username: String?,
         email: String?,
         uploadTime: Long,
@@ -13,6 +14,7 @@ class Comment {
     ) {
         this.userId = userId
         this.username = username
+        this.name = name
         this.email = email
         this.profileImage = profileImage
         this.uploadTime = uploadTime
@@ -21,6 +23,7 @@ class Comment {
 
     lateinit var userId: String
     var username: String? = null
+    var name: String? = null
     var email: String? = null
     var profileImage:String? = null
     var uploadTime: Long = 0

@@ -9,11 +9,14 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Patterns
 import android.view.*
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -29,6 +32,7 @@ import com.example.letsconnect.databinding.FragmentProfileBinding
 import com.example.letsconnect.models.Post
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +41,7 @@ import java.io.FileNotFoundException
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPostItemClicked {
+class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostItemClicked {
 
     private var _binding: FragmentProfileBinding? = null
     private lateinit var encodedImage: ByteArray
@@ -74,8 +78,9 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         var selectedUser = arguments?.getString("selected_userId")
         navBar = requireActivity().findViewById(R.id.nav_view)
-        requireActivity().title = "Profile"
 
+        val actionBar = requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "Profile"
         if (selectedUser != null) {
             checkIfFollowing(selectedUser)
             navBar.visibility = View.GONE
@@ -93,8 +98,8 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
             }
         }
         binding.btnFollow.setOnClickListener {
-            if(binding.btnFollow.text.toString().lowercase()=="follow")
-            followUser(selectedUser.toString())
+            if (binding.btnFollow.text.toString().lowercase() == "follow")
+                followUser(selectedUser.toString())
             else
                 unfollowUser(selectedUser.toString())
         }
@@ -117,12 +122,49 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
                 viewModel.getCurrentUserDetails(selectedUser.toString())
                 viewModel.getCurrentUserPosts(selectedUser.toString())
             }
+
+            btnUpdate.setOnClickListener {
+                etUsername.setText(tvUsername.text.toString())
+                etName.setText(tvName.text.toString())
+                etLayoutName.isVisible = true
+                etLayoutUsername.isVisible = true
+                tvName.isVisible = false
+                tvUsername.isVisible = false
+                btnUpdate.isVisible = false
+                btnSave.isVisible = true
+            }
+            btnSave.setOnClickListener {
+                if (isValid()) {
+                    val name = etName.text.toString()
+                    val username = etUsername.text.toString()
+                    viewModel.updateProfile(name, username)
+                    btnUpdate.isVisible = true
+                    btnSave.isVisible = false
+                    etLayoutName.isVisible = false
+                    etLayoutUsername.isVisible = false
+                    tvName.isVisible = true
+                    tvUsername.isVisible = true
+                }
+            }
+        }
+    }
+
+    private fun isValid(): Boolean {
+        if (binding.etName.text.toString().trim().isEmpty()) {
+            showToast("Enter name")
+            return false
+        } else if (binding.etUsername.text.toString().trim().isEmpty()) {
+            showToast("Enter username")
+            return false
+        } else {
+            return true
         }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         this.menu = menu
-        menuInflater.inflate(R.menu.login_menu, menu)    }
+        menuInflater.inflate(R.menu.login_menu, menu)
+    }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         val alertDialog = AlertDialog.Builder(requireContext())
@@ -174,13 +216,13 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
         }
     }
 
-    private fun unfollowUser(userId: String){
-    viewModel.unfollowUser(userId)
+    private fun unfollowUser(userId: String) {
+        viewModel.unfollowUser(userId)
     }
 
     private fun followUser(userId: String) {
         lifecycleScope.launchWhenCreated {
-            viewModel.currentUserDetails.collect{
+            viewModel.currentUserDetails.collect {
                 when (it) {
                     is Resource.Error -> {
                         showSnackBar(message = it.message!!)
@@ -189,14 +231,16 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
                     is Resource.Success -> {
                         if (it.data!!.exists()) {
 
-                            val name = it.data.getString(KEY_USER_NAME)
+                            val username = it.data.getString(KEY_USER_NAME)
                             val email = it.data.getString(KEY_EMAIL)
                             val profileImage = it.data.getString(KEY_PROFILE_IMAGE)
+                            val name = it.data.getString("name")
                             val followers = it.data.getLong(KEY_FOLLOWERS)!!.toInt()
                             val following = it.data.getLong(KEY_FOLLOWING)!!.toInt()
                             val user = HashMap<String, Any>()
                             user[KEY_USER_ID] = userId
-                            user[KEY_USER_NAME] = name.toString()
+                            user[KEY_USER_NAME] = username.toString()
+                            user["name"] = name.toString()
                             user[KEY_EMAIL] = email.toString()
                             user[KEY_FOLLOWERS] = followers
                             user[KEY_FOLLOWING] = following
@@ -220,7 +264,7 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
     private fun showCurrentUser(userId: String) {
         viewModel.getCurrentUserDetails(userId)
         lifecycleScope.launchWhenCreated {
-            viewModel.currentUserDetails.collect {
+            viewModel.currentUserDetails.collect { it ->
                 when (it) {
                     is Resource.Error -> {
                         showSnackBar(message = it.message!!)
@@ -248,8 +292,9 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
                             val following = it.data.getLong(KEY_FOLLOWING)!!.toInt()
                             val image = it.data.getString(KEY_PROFILE_IMAGE)
                             binding.apply {
-                                tvName.text = it.data.getString(KEY_USER_NAME)
-                                tvUsername.text = it.data.getString(KEY_EMAIL)
+                                tvName.text = it.data.getString("name")
+                                tvEmail.text = it.data.getString(KEY_EMAIL)
+                                tvUsername.text = it.data.getString(KEY_USER_NAME)
                                 tvFollowers.text = "Followers: $followers"
                                 tvFollowing.text = "Following: $following"
                                 if (image != null) {
@@ -287,11 +332,15 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
                                                     binding.tvNoPost.isVisible = false
 
                                                     binding.rvMyPosts.isVisible = true
-                                                    val options = FirestoreRecyclerOptions.Builder<Post>()
-                                                        .setQuery(it.data.query, Post::class.java).build()
-                                                    binding.rvMyPosts.layoutManager = LinearLayoutManager(context)
+                                                    val options =
+                                                        FirestoreRecyclerOptions.Builder<Post>()
+                                                            .setQuery(it.data.query,
+                                                                Post::class.java).build()
+                                                    binding.rvMyPosts.layoutManager =
+                                                        LinearLayoutManager(context)
                                                     arr = options.snapshots
-                                                    adapter = AllPostsFirestoreAdapter(options, this@ProfileFragment)
+                                                    adapter = AllPostsFirestoreAdapter(options,
+                                                        this@ProfileFragment)
                                                     binding.rvMyPosts.adapter = adapter
                                                     adapter.startListening()
                                                 } else {
@@ -302,7 +351,6 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
                                         }
                                     }
                                 }
-
                             }
                         }
                     }
@@ -312,6 +360,9 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
 
     }
 
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onStop() {
         super.onStop()
@@ -334,7 +385,6 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
         pd.show()
         viewModel.uploadProfilePic(encodedImage)
     }
-
 
 
     private fun encodeImage(bitmap: Bitmap): ByteArray {
@@ -394,4 +444,16 @@ class ProfileFragment : Fragment(),MenuProvider, AllPostsFirestoreAdapter.OnPost
     override fun onEmailClicked(position: Int) {
     }
 
+    override fun onLongClick(position: Int): Boolean {
+        val alertDialog = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("Delete")
+        alertDialog.setMessage("Are you sure?")
+        alertDialog.setIcon(R.drawable.ic_delete)
+        alertDialog.setPositiveButton("Delete", DialogInterface.OnClickListener { _, _ ->
+            viewModel.deletePost(arr[position].postId)
+        }).setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->
+        })
+        alertDialog.setCancelable(false).create().show()
+        return false
+    }
 }

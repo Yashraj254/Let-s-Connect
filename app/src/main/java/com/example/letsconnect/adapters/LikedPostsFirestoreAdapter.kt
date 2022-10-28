@@ -7,20 +7,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.letsconnect.R
 import com.example.letsconnect.Utils
+import com.example.letsconnect.databinding.RvLikePostItemBinding
 import com.example.letsconnect.databinding.RvPostItemBinding
 import com.example.letsconnect.models.Post
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 
-class AllPostsFirestoreAdapter(
+class LikedPostsFirestoreAdapter(
     options: FirestoreRecyclerOptions<Post>,
     private val onPostItemClicked: OnPostItemClicked,
+    private val map: Map<String, Post>
 ) :
     FirestoreRecyclerAdapter<Post, RecyclerView.ViewHolder>(options) {
     val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val binding = RvPostItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = RvLikePostItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         binding.onPostItemClicked = onPostItemClicked
         return PostViewHolder(binding)
     }
@@ -31,16 +33,16 @@ class AllPostsFirestoreAdapter(
 
     }
 
-    inner class PostViewHolder(private val binding: RvPostItemBinding) :
+    inner class PostViewHolder(private val binding: RvLikePostItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val ibtnLike = binding.ibtnLike
         fun bind(post: Post, position: Int) {
             binding.post = post
             binding.position = position
-
+            val data = map[post.postId]
             binding.apply {
-                tvName.text = post.name
-                tvUsername.text = post.username
+                tvName.text = data?.name.toString()
+                tvUsername.text = data?.username.toString()
                 tvPostMessage.text = post.postMessage
                 tvTotalComments.text = post.totalComments.toString()
                 tvTotalLikes.text = post.likedBy.size.toString()

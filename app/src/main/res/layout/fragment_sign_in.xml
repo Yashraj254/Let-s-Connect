@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:clipToPadding="false"
     android:overScrollMode="never"
     android:padding="@dimen/_24sdp"
@@ -58,7 +59,6 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:background="@drawable/background_input"
             android:ems="10"
-
             android:hint="@string/password"
             android:inputType="textPassword"
             android:paddingStart="@dimen/_16sdp"
@@ -88,6 +88,16 @@
                 android:layout_gravity="center"
                 android:visibility="gone"/>
         </FrameLayout>
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/googleSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_50sdp"
+            android:text="@string/sign_in"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_13ssp"
+            android:textStyle="bold"
+            app:cornerRadius="@dimen/_8sdp" />
+
         <TextView
             android:id="@+id/createNew"
             android:layout_width="wrap_content"

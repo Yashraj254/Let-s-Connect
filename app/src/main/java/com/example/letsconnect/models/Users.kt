@@ -6,12 +6,14 @@ class Users {
         userId: String,
         profileImage:String?,
         username: String?,
+        name:String?,
         email: String?,
         followers: Int,
         following: Int,
     ) {
         this.userId = userId
         this.username = username
+        this.name = name
         this.email = email
         this.profileImage = profileImage
         this.followers = followers
@@ -20,6 +22,7 @@ class Users {
 
     lateinit var userId: String
     var username: String? = null
+    var name: String? = null
     var email: String? = null
     var profileImage:String? = null
     var followers: Int = 0

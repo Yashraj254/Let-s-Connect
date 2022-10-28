@@ -17,6 +17,7 @@ import com.example.letsconnect.databinding.FragmentSearchUsersBinding
 import com.example.letsconnect.models.Users
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QuerySnapshot
@@ -46,7 +47,8 @@ class SearchUsersFragment : Fragment(), AllUsersFirestoreAdapter.OnSearchUserIte
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().title = "All Users"
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "All Users"
         setRecyclerView()
     }
 

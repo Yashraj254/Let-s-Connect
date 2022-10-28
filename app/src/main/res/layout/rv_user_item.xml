@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:onClick="@{()->OnUserItemClicked.onUserChatClicked(position)}"
         android:background="@drawable/shape"
+        android:backgroundTint="#000000"
         android:layout_margin="2dp"
         android:padding="5dp">
 
@@ -29,6 +30,7 @@
             android:id="@+id/iv_profile_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
+
             android:layout_margin="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -38,17 +40,21 @@
             android:id="@+id/tv_chat_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
             android:layout_marginLeft="5dp"
+            android:layout_marginTop="3dp"
             android:text="Username"
             app:layout_constraintStart_toEndOf="@+id/iv_profile_image"
             app:layout_constraintTop_toTopOf="@+id/iv_profile_image" />
 
         <TextView
-            android:id="@+id/tv_chat_user_email"
+            android:id="@+id/tv_chat_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#6C757D"
             android:layout_marginLeft="5dp"
-            android:text="Email"
+            android:layout_marginBottom="3dp"
+            android:text="Name"
             app:layout_constraintBottom_toBottomOf="@+id/iv_profile_image"
             app:layout_constraintStart_toEndOf="@+id/iv_profile_image" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,8 +31,8 @@ class AllUsersFirestoreAdapter(
             binding.users = users
             binding.position = position
             binding.apply {
+                tvChatName.text = users.name
                 tvChatUserName.text = users.username
-                tvChatUserEmail.text = users.email
                 val image = users.profileImage
                 if (image != null)
                     Glide.with(ivProfileImage).load(image).into(binding.ivProfileImage)

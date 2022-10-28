@@ -16,9 +16,11 @@ import com.example.letsconnect.Resource
 import com.example.letsconnect.adapters.AllPostsFirestoreAdapter
 import com.example.letsconnect.databinding.FragmentHomeBinding
 import com.example.letsconnect.models.Post
+import com.example.letsconnect.profile.ProfileViewModel
 import com.example.letsconnect.showSnackBar
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,6 +32,7 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
     private lateinit var adapter: AllPostsFirestoreAdapter
     private var menu: Menu? = null
     private lateinit var navBar: BottomNavigationView
+    private val profileViewModel: ProfileViewModel by activityViewModels()
     private val viewModel: HomeViewModel by activityViewModels()
     private lateinit var arr: ObservableSnapshotArray<Post>
 
@@ -53,7 +56,6 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().title = "Home"
         viewModel.getAllPosts()
         setRecyclerView()
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -63,6 +65,9 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         navBar = requireActivity().findViewById(R.id.nav_view)
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar)
+        actionBar.title = "Home"
+
         navBar.visibility = View.VISIBLE
     }
 
@@ -163,6 +168,10 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
 
     override fun onEmailClicked(position: Int) {
         sendData(arr[position])
+    }
+
+    override fun onLongClick(position: Int): Boolean {
+       return false
     }
 
 }

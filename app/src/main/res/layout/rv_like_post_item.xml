@@ -14,7 +14,7 @@
 
         <variable
             name="OnPostItemClicked"
-            type="com.example.letsconnect.adapters.AllPostsFirestoreAdapter.OnPostItemClicked" />
+            type="com.example.letsconnect.adapters.LikedPostsFirestoreAdapter.OnPostItemClicked" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

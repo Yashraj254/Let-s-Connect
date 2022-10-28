@@ -16,6 +16,7 @@ import com.example.letsconnect.databinding.FragmentChatBinding
 import com.example.letsconnect.models.ChatMessage
 import com.example.letsconnect.showSnackBar
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,7 +54,10 @@ class ChatFragment : Fragment() {
         senderUid = currentUser
         receiverUid = arguments?.getString("receiver_id")!!
         receiverName = arguments?.getString("receiver_name")!!
-        requireActivity().title = receiverName
+
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = receiverName
+
         senderRoom = senderUid + receiverUid
         receiverRoom = receiverUid + senderUid
         setRecyclerView()

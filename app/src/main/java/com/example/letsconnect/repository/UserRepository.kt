@@ -36,6 +36,21 @@ class UserRepository @Inject constructor(
         database.collection(KEY_COLLECTION_USERS).document(userId).get()
     }
 
+    suspend fun updateUserProfile(name:String,username:String)= safeApiCall{
+        val obj = mutableMapOf<String, String>()
+        obj["name"] = name
+        obj[KEY_USER_NAME] = username
+        database.collection("users").document(currentUser)
+            .update(obj as Map<String, Any>)
+        database.collection("users").document(currentUser).collection("myPosts").get().addOnSuccessListener {
+            for (i in it){
+                database.collection("allPosts").document(i.getString("postId").toString()).update(obj as Map<String, Any>)
+                database.collection("users").document(currentUser).collection("myPosts").document(i.getString("postId").toString()).update(obj as Map<String, Any>)
+
+            }
+        }
+    }
+
     suspend fun unfollowUser(userId: String) = safeApiCall{
         database.collection("users").document(currentUser)
             .collection("following").document(userId).delete().onSuccessTask {

@@ -1,6 +1,7 @@
 package com.example.letsconnect.likedPosts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,20 +15,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.letsconnect.R
 import com.example.letsconnect.Resource
 import com.example.letsconnect.adapters.AllPostsFirestoreAdapter
+import com.example.letsconnect.adapters.LikedPostsFirestoreAdapter
 import com.example.letsconnect.databinding.FragmentLikedPostsBinding
 import com.example.letsconnect.models.Post
+import com.example.letsconnect.profile.ProfileViewModel
 import com.example.letsconnect.showSnackBar
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked {
+class LikedPostsFragment : Fragment(),LikedPostsFirestoreAdapter.OnPostItemClicked {
 
     private var _binding: FragmentLikedPostsBinding? = null
     private val viewModel: LikedPostsViewModel by activityViewModels()
-    private lateinit var adapter: AllPostsFirestoreAdapter
+    private val profileViewModel: ProfileViewModel by activityViewModels()
+
+    private lateinit var adapter: LikedPostsFirestoreAdapter
     private lateinit var arr: ObservableSnapshotArray<Post>
    @Inject
    lateinit var currentUser:String
@@ -42,19 +48,21 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentLikedPostsBinding.inflate(inflater, container, false)
-        requireActivity().title = "Liked Posts"
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setRecyclerView()
+
+        val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
+        actionBar.title = "Liked Posts"
         binding.retryButton.setOnClickListener { viewModel.getLikedPosts() }
     }
     private fun setRecyclerView() {
         viewModel.getLikedPosts()
         lifecycleScope.launchWhenCreated {
-            viewModel.likedPosts.collect{
+            viewModel.likedPosts.collect{ it ->
                 when (it) {
                     is Resource.Error -> {
                         showSnackBar(message = it.message!!)
@@ -86,11 +94,15 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
                                 .setQuery(it.data.query, Post::class.java)
                                 .build()
                             arr = options.snapshots
+                            viewModel.likedPostsMappedData.collect{ likedPostMap->
+                                if(likedPostMap.isNotEmpty()){
+                                    binding.rvLikedPosts.layoutManager = LinearLayoutManager(context)
+                                    adapter = LikedPostsFirestoreAdapter(options,this@LikedPostsFragment,likedPostMap)
+                                    binding.rvLikedPosts.adapter = adapter
+                                    adapter.startListening()
+                                }
+                            }
 
-                            binding.rvLikedPosts.layoutManager = LinearLayoutManager(context)
-                            adapter = AllPostsFirestoreAdapter(options,this@LikedPostsFragment)
-                            binding.rvLikedPosts.adapter = adapter
-                            adapter.startListening()
                         }else{
                             binding.lottieNoLikedPost.isVisible = true
                             binding.tvNoPost.isVisible = true
@@ -141,5 +153,9 @@ class LikedPostsFragment : Fragment(),AllPostsFirestoreAdapter.OnPostItemClicked
 
     override fun onEmailClicked(position: Int) {
         sendData(arr[position])
+    }
+
+    override fun onLongClick(position: Int): Boolean {
+return false
     }
 }

@@ -42,8 +42,8 @@ class AllCommentsFirestoreAdapter(
             binding.position = position
             binding.comment = comment
             binding.apply {
+                tvName.text = comment.name
                 tvUsername.text = comment.username
-                tvUsermail.text = comment.email
                 tvComment.text = comment.commentMessage
                 val image = comment.profileImage
                 if(image!=null)

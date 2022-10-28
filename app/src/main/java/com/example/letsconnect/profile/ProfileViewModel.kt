@@ -60,4 +60,12 @@ class ProfileViewModel @Inject constructor(private val repository: UserRepositor
     fun uploadProfilePic(encodedImage:ByteArray) = viewModelScope.launch(Dispatchers.IO) {
         repository.uploadProfilePic(encodedImage)
     }
+
+    fun deletePost(postId:String)= viewModelScope.launch(Dispatchers.IO) {
+        repo.deletePost(postId)
+    }
+    
+    fun updateProfile(name:String,username:String)= viewModelScope.launch(Dispatchers.IO) {
+        repository.updateUserProfile(name, username)
+    }
 }

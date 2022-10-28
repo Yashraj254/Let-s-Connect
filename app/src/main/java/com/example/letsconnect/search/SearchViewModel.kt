@@ -20,10 +20,10 @@ class SearchViewModel @Inject constructor(private val repository: UserRepository
     val allUsers: StateFlow<Resource<QuerySnapshot>> = _allUsers
 
 
+
     fun getAllUsers() = viewModelScope.launch(Dispatchers.IO) {
         _allUsers.emit(repository.getAllUsers())
     }
-
 
 
 

@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.letsconnect.databinding.RvFollowItemBinding
-import com.example.letsconnect.databinding.RvSearchUserItemBinding
 import com.example.letsconnect.models.Users
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -13,7 +12,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 class FollowFirestoreAdapter(
     options: FirestoreRecyclerOptions<Users>,
     private val followItemClicked:OnFollowItemClicked,
-    private val btnTextFollows:String
+    private val btnTextFollows:String,
+    private val map: Map<String,Users>
 ) :
     FirestoreRecyclerAdapter<Users, RecyclerView.ViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -31,11 +31,12 @@ class FollowFirestoreAdapter(
         fun bind(users: Users, position:Int) {
             binding.users = users
             binding.position = position
+            val data = map[users.userId]
             binding.apply {
-                tvChatUserName.text = users.username
-                tvChatUserEmail.text = users.email
+                tvChatName.text = data?.name
+                tvChatUsername.text = data?.username
                 btnFollows.text = btnTextFollows
-                val image = users.profileImage
+                val image = data?.profileImage
                 if (image != null)
                     Glide.with(ivProfileImage).load(image).into(binding.ivProfileImage)
             }
