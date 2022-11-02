@@ -12,15 +12,22 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.browser.trusted.sharing.ShareTarget.FileFormField.KEY_NAME
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.example.letsconnect.*
 import com.example.letsconnect.databinding.FragmentSignUpBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.SignInButton
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,46 +35,79 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
+import kotlin.collections.HashMap
+import kotlin.collections.Map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 
 class SignUpFragment : Fragment() {
-    private  val TAG = "SignUpFragment"
+    private val TAG = "SignUpFragment"
     private lateinit var binding: FragmentSignUpBinding
     private lateinit var encodedImage: ByteArray
     private val auth = FirebaseAuth.getInstance()
-   // private lateinit var preferenceManager:
+
+    // private lateinit var preferenceManager:
+    private lateinit var navBar: BottomNavigationView
+    private val viewModel: LoginViewModel by activityViewModels()
 
 
     private val database = FirebaseFirestore.getInstance()
     private lateinit var imageUri: Uri
     private val userRef = database.collection("users")
-   private lateinit var userId: String
+    private lateinit var userId: String
     private lateinit var bitmap: Bitmap
     private lateinit var storageReference: StorageReference
-
+    private lateinit var googleSignInClient: GoogleSignInClient
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentSignUpBinding.inflate(layoutInflater)
-        val view = binding.root
 
-       // preferenceManager = context?.let { PreferenceManager(it) }!!
-        setListeners()
-        return view
+        return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        navBar = requireActivity().findViewById(R.id.nav_view)
+        navBar.isVisible = false
+        val actionBar = requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar)
+        actionBar.title = "Sign Up"
+        setListeners()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
+
+        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+        setGoogleSignUpButtonText(binding.googleSignUp,"Sign up")
+        binding.googleSignUp.setOnClickListener {
+            val signInIntent = googleSignInClient.signInIntent
+            launcher.launch(signInIntent)
+        }
+    }
+    private fun setGoogleSignUpButtonText(signInButton: SignInButton, buttonText: String?) {
+        // Find the TextView that is inside of the SignInButton and set its text
+        for (i in 0 until signInButton.childCount) {
+            val v = signInButton.getChildAt(i)
+            if (v is TextView) {
+                v.text = buttonText
+                return
+            }
+        }
+    }
     private fun setListeners() {
         binding.textSignIn.setOnClickListener {
 
-            Navigation.findNavController(requireView()).navigate(R.id.action_signUpFragment_to_signInFragment)
-         //   startActivity(Intent(requireActivity(), MainActivity::class.java))
+            Navigation.findNavController(requireView())
+                .navigate(R.id.action_signUpFragment_to_signInFragment)
+            //   startActivity(Intent(requireActivity(), MainActivity::class.java))
         }
 
         binding.buttonSignUp.setOnClickListener {
             if (isValidSignUpDetails()) {
-                    signUp()
+                signUp()
             }
         }
         binding.layouImage.setOnClickListener {
@@ -81,7 +121,53 @@ class SignUpFragment : Fragment() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    private  fun signUp() {
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val googleSignInAccount = task.getResult(ApiException::class.java)
+                    googleSignInAccount?.apply {
+                        idToken?.let { idToken ->
+                            signUpWithGoogle(idToken)
+                        }
+                    }
+                } catch (e: ApiException) {
+                    showSnackBar(e.message.toString())
+                }
+            }
+        }
+
+    private fun signUpWithGoogle(idToken: String) {
+        viewModel.signInWithGoogle(idToken).observe(this) { response ->
+            when (response) {
+                is Response.Loading -> {
+                    showSnackBar("Loading")
+                }
+                is Response.Success<*> -> {
+                    val isNewUser = response.data
+                    if (isNewUser as Boolean) {
+                        showSnackBar("new user")
+                        viewModel.deleteAccount(idToken)
+                        Navigation.findNavController(requireView())
+                            .navigate(R.id.action_signInFragment_to_signUpFragment)
+
+                    } else {
+                        showSnackBar("old user")
+                        viewModel.createUser()
+                        Navigation.findNavController(requireView())
+                            .navigate(R.id.action_signInFragment_to_navigation_home)
+                    }
+                }
+                is Response.Failure -> {
+                    showSnackBar(response.errorMessage)
+
+                }
+            }
+        }
+    }
+
+    private fun signUp() {
         loading(true)
         val database = FirebaseFirestore.getInstance()
         val user = HashMap<String, Any>()
@@ -91,27 +177,27 @@ class SignUpFragment : Fragment() {
         user[KEY_FOLLOWING] = 0
 
 
-              auth.createUserWithEmailAndPassword( binding.inputEmail.text.toString(),binding.inputPassword.text.toString())
-                  .addOnSuccessListener {
-                      user[KEY_USER_ID] = auth.currentUser!!.uid
-                      userId = auth.currentUser!!.uid
-                      storageReference = FirebaseStorage.getInstance().reference.child("$userId/profilePhoto")
-                      if(this::encodedImage.isInitialized)
-                      uploadImage()
-                      database.collection(KEY_COLLECTION_USERS).document(user[KEY_USER_ID] as String).set(user).addOnSuccessListener {
-                          loading(false)
-                      }
-                          .addOnFailureListener {
-                              loading(false)
-                              it.message?.let { it1 -> showToast(it1) }
-                          }
-                      showToast("Account Created")
-                      startActivity(Intent(requireActivity(), MainActivity::class.java))        }
-                  .addOnFailureListener {
-                      showSnackBar("SignUp Failed")
-                      loading(false)
+        auth.createUserWithEmailAndPassword(binding.inputEmail.text.toString(),
+            binding.inputPassword.text.toString()).addOnSuccessListener {
+                user[KEY_USER_ID] = auth.currentUser!!.uid
+                userId = auth.currentUser!!.uid
+                storageReference =
+                    FirebaseStorage.getInstance().reference.child("$userId/profilePhoto")
+                if (this::encodedImage.isInitialized) uploadImage()
+                database.collection(KEY_COLLECTION_USERS).document(user[KEY_USER_ID] as String)
+                    .set(user).addOnSuccessListener {
+                        loading(false)
+                    }.addOnFailureListener {
+                        loading(false)
+                        it.message?.let { it1 -> showToast(it1) }
+                    }
+                showToast("Account Created")
+                startActivity(Intent(requireActivity(), MainActivity::class.java))
+            }.addOnFailureListener {
+                showSnackBar("SignUp Failed")
+                loading(false)
 
-                  }
+            }
 
     }
 
@@ -125,8 +211,8 @@ class SignUpFragment : Fragment() {
             storageReference.downloadUrl.addOnSuccessListener {
                 val obj = mutableMapOf<String, String>()
                 obj[KEY_PROFILE_IMAGE] = it.toString()
-                userRef.document(userId).update(obj as Map<String,Any>).addOnSuccessListener {
-                    Toast.makeText(context,"Profile Picture Uploaded",Toast.LENGTH_SHORT).show()
+                userRef.document(userId).update(obj as Map<String, Any>).addOnSuccessListener {
+                    Toast.makeText(context, "Profile Picture Uploaded", Toast.LENGTH_SHORT).show()
                 }
             }
         }.addOnFailureListener {
@@ -182,7 +268,7 @@ class SignUpFragment : Fragment() {
         } else if (binding.inputPassword.text.toString().trim().isEmpty()) {
             showToast("Enter password")
             return false
-        }else {
+        } else {
             return true
         }
     }

@@ -20,7 +20,6 @@
             android:id="@+id/details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -151,7 +150,7 @@
                 android:layout_marginBottom="@dimen/_12sdp"
                 android:gravity="center_horizontal"
                 android:text="Oops..! Connection error"
-                android:textColor="@color/primary_text"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_14sdp"
                 android:textStyle="bold" />
 
@@ -160,7 +159,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:backgroundTint="@color/primary_text"
                 android:text="Retry"
                 android:textAllCaps="false"
                 android:textColor="@color/white" />

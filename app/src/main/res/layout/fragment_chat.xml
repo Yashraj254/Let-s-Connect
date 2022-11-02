@@ -14,7 +14,7 @@
         android:layout_height="45dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="10dp"
-        android:background="#FFFFFF"
+        android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/fui_ic_check_circle_black_128dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:padding="10dp"
+        android:background="@android:color/transparent"
         app:cardCornerRadius="30dp"
         app:cardElevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -36,7 +37,7 @@
             android:id="@+id/et_chat_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/fui_transparent"
+            android:background="@android:color/transparent"
             android:ems="10"
             android:hint="Enter message..."
             android:inputType="textPersonName"
@@ -89,7 +90,7 @@
             android:layout_marginBottom="@dimen/_12sdp"
             android:gravity="center_horizontal"
             android:text="Oops..! Connection error"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/white"
             android:textSize="@dimen/_14sdp"
             android:textStyle="bold" />
 
@@ -98,7 +99,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/primary_text"
             android:text="Retry"
             android:textAllCaps="false"
             android:textColor="@color/white" />

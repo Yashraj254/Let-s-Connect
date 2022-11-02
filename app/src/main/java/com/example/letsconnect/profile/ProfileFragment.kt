@@ -32,6 +32,9 @@ import com.example.letsconnect.databinding.FragmentProfileBinding
 import com.example.letsconnect.models.Post
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -52,7 +55,7 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
     private val viewModel: ProfileViewModel by activityViewModels()
     private lateinit var adapter: AllPostsFirestoreAdapter
     private lateinit var arr: ObservableSnapshotArray<Post>
-
+    private lateinit var googleSignInClient: GoogleSignInClient
     @Inject
     lateinit var currentUser: String
 
@@ -78,7 +81,11 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         var selectedUser = arguments?.getString("selected_userId")
         navBar = requireActivity().findViewById(R.id.nav_view)
-
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
         val actionBar = requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
         actionBar.title = "Profile"
         if (selectedUser != null) {
@@ -174,6 +181,7 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
         alertDialog.setPositiveButton("Logout", DialogInterface.OnClickListener { _, _ ->
             navBar.isVisible = false
             auth.signOut()
+            googleSignInClient.signOut()
             Navigation.findNavController(requireView())
                 .navigate(R.id.action_navigation_profile_to_signInFragment)
         }).setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->

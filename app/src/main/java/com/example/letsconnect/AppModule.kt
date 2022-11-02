@@ -1,5 +1,9 @@
 package com.example.letsconnect
 
+import android.content.Context
+import androidx.core.content.res.TypedArrayUtils.getString
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,6 +13,7 @@ import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -31,4 +36,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesStorageRef(): StorageReference = FirebaseStorage.getInstance().reference
+
+
+
 }

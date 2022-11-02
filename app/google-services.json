@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "45226635985-8amslejul92kl9a3chk9a1pmilua04dd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.letsconnect",
+            "certificate_hash": "489c74ef82f46f7dc26bd2b41328a3c57d1ca0c5"
+          }
+        },
+        {
           "client_id": "45226635985-26p1713k65llaosqn9q31s9nj4au6v2p.apps.googleusercontent.com",
           "client_type": 3
         }
