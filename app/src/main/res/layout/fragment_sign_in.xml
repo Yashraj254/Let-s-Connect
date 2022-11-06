@@ -5,133 +5,155 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
+    android:fillViewport="true"
     android:clipToPadding="false"
     android:overScrollMode="never"
     android:padding="@dimen/_24sdp"
     android:scrollbars="none"
     tools:context=".login.SignInFragment">
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:text="@string/welcome_back"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_18ssp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Let's Connect"
+            android:textColor="#FFFFFF"
+            android:textSize="48sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:text="@string/login_to_continue"
-            android:textColor="@color/secondary_text"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold" />
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/et__layout_email"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <LinearLayout
+            android:id="@+id/layout_sign_in"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:textColorHint="@color/secondary_text"
-            app:boxStrokeColor="#6C757D">
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_email"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp"
-                android:background="@android:color/transparent"
-                android:ems="10"
-                android:hint="Enter email..."
-                android:inputType="textEmailAddress"
-                android:paddingStart="@dimen/_16sdp"
-                android:paddingEnd="@dimen/_16sdp"
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:text="@string/welcome_back"
                 android:textColor="@color/white"
-                android:textColorHint="#FFFFFF"
-                android:textSize="@dimen/_13ssp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/et__layout_password"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:textColorHint="@color/secondary_text"
-            app:boxStrokeColor="#6C757D">
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@string/login_to_continue"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_password"
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/et__layout_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp"
-                android:background="@android:color/transparent"
-                android:ems="10"
-                android:hint="Enter password..."
-                android:inputType="textPassword"
-                android:paddingStart="@dimen/_16sdp"
-                android:paddingEnd="@dimen/_16sdp"
-                android:textColor="@color/white"
-                android:textColorHint="#FFFFFF"
-                android:textSize="@dimen/_13ssp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:textColorHint="@color/secondary_text"
+                app:boxStrokeColor="#6C757D">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_45sdp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="Enter email..."
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="@dimen/_16sdp"
+                    android:paddingEnd="@dimen/_16sdp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#FFFFFF"
+                    android:textSize="@dimen/_13ssp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:animateLayoutChanges="true">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonSignIn"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/et__layout_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:textColorHint="@color/secondary_text"
+                app:boxStrokeColor="#6C757D">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_45sdp"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="Enter password..."
+                    android:inputType="textPassword"
+                    android:paddingStart="@dimen/_16sdp"
+                    android:paddingEnd="@dimen/_16sdp"
+                    android:textColor="@color/white"
+                    android:textColorHint="#FFFFFF"
+                    android:textSize="@dimen/_13ssp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:animateLayoutChanges="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSignIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:text="@string/sign_in"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_13ssp"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/_8sdp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/googleSignIn"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/_50sdp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
                 android:text="@string/sign_in"
-                android:textColor="@color/white"
                 android:textSize="@dimen/_13ssp"
                 android:textStyle="bold"
                 app:cornerRadius="@dimen/_8sdp" />
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
-                android:layout_gravity="center"
-                android:visibility="gone" />
-        </FrameLayout>
+            <TextView
+                android:id="@+id/createNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:text="@string/create_new_account"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13ssp"
+                android:textStyle="bold" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/googleSignIn"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/_50sdp"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/transparent"
-            android:text="@string/sign_in"
-            android:textSize="@dimen/_13ssp"
-            android:textStyle="bold"
-            app:cornerRadius="@dimen/_8sdp" />
-
-        <TextView
-            android:id="@+id/createNew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_30sdp"
-            android:text="@string/create_new_account"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_13ssp"
-            android:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
+
+
 </ScrollView>

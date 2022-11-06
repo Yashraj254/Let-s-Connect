@@ -147,16 +147,20 @@ class SignUpFragment : Fragment() {
                 is Response.Success<*> -> {
                     val isNewUser = response.data
                     if (isNewUser as Boolean) {
-                        showSnackBar("new user")
                         viewModel.deleteAccount(idToken)
-                        Navigation.findNavController(requireView())
-                            .navigate(R.id.action_signInFragment_to_signUpFragment)
-
+                        viewModel.createUser().observe(this){
+                            when(it){
+                                is Response.Loading -> { }
+                                is Response.Success -> {
+                                    Navigation.findNavController(requireView())
+                                        .navigate(R.id.action_signUpFragment_to_navigation_profile)
+                                }
+                                is Response.Failure -> { }
+                            }
+                        }
                     } else {
-                        showSnackBar("old user")
-                        viewModel.createUser()
-                        Navigation.findNavController(requireView())
-                            .navigate(R.id.action_signInFragment_to_navigation_home)
+                     showSnackBar("Account already Exists")
+
                     }
                 }
                 is Response.Failure -> {
@@ -171,10 +175,12 @@ class SignUpFragment : Fragment() {
         loading(true)
         val database = FirebaseFirestore.getInstance()
         val user = HashMap<String, Any>()
+        val followers = ArrayList<String>()
+        val following = ArrayList<String>()
         user[KEY_USER_NAME] = binding.inputName.text.toString()
         user[KEY_EMAIL] = binding.inputEmail.text.toString()
-        user[KEY_FOLLOWERS] = 0
-        user[KEY_FOLLOWING] = 0
+        user[KEY_FOLLOWERS] = followers
+        user[KEY_FOLLOWING] = following
 
 
         auth.createUserWithEmailAndPassword(binding.inputEmail.text.toString(),

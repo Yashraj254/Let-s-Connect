@@ -3,6 +3,7 @@ package com.example.letsconnect.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.letsconnect.databinding.RvSearchUserItemBinding
@@ -13,6 +14,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 class AllUsersFirestoreAdapter(
     options: FirestoreRecyclerOptions<Users>,
     private val userItemClicked:OnSearchUserItemClicked,
+   private val currentUser:String
 ) :
     FirestoreRecyclerAdapter<Users, RecyclerView.ViewHolder>(options) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -30,6 +32,8 @@ class AllUsersFirestoreAdapter(
         fun bind(users: Users,position:Int) {
             binding.users = users
             binding.position = position
+            if(users.userId == currentUser)
+                binding.root.isVisible = false
             binding.apply {
                 tvChatName.text = users.name
                 tvChatUserName.text = users.username

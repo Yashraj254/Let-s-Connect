@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.letsconnect.R
+import com.example.letsconnect.Response
 import com.example.letsconnect.databinding.FragmentNewPostBinding
 import com.example.letsconnect.showSnackBar
 import com.google.android.material.appbar.MaterialToolbar
@@ -41,13 +43,29 @@ class NewPostFragment : Fragment() {
                 if (!binding.etPostMessage.text.isNullOrBlank())
                 {
                     addNewPost(binding.etPostMessage.text.toString())
-                    binding.etPostMessage.text = null
-                    showSnackBar("Post Uploaded.")
                 }
             }
     }
     private fun addNewPost(message: String) {
-        viewModel.addNewPost(message)
+        viewModel.addNewPost(message).observe(viewLifecycleOwner){
+            when(it){
+                is Response.Failure->{
+                    binding.progressBar2.isVisible = false
+                    showSnackBar("Error: "+it.errorMessage)
+                }
+                is Response.Loading->{
+                    binding.progressBar2.isVisible = true
+                }
+                is Response.Success->{
+                    if(it.data){
+                        binding.progressBar2.isVisible = false
+                        binding.etPostMessage.text = null
+                        showSnackBar("Post Uploaded.")
+                    }
+
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

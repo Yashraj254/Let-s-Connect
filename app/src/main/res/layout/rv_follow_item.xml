@@ -15,7 +15,7 @@
 
         <variable
             name="OnFollowItemClicked"
-            type="com.example.letsconnect.adapters.FollowFirestoreAdapter.OnFollowItemClicked" />
+            type="com.example.letsconnect.adapters.FollowAdapter.OnFollowItemClicked" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

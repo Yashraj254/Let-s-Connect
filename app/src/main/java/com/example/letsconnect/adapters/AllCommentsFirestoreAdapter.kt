@@ -54,5 +54,6 @@ class AllCommentsFirestoreAdapter(
     interface OnCommentItemClicked {
         fun onUsernameClicked(position: Int)
         fun onEmailClicked(position: Int)
+        fun onLongClick(position: Int): Boolean
     }
 }

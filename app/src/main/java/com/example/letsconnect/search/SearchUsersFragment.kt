@@ -54,7 +54,7 @@ class SearchUsersFragment : Fragment(), AllUsersFirestoreAdapter.OnSearchUserIte
 
     private fun setRecyclerView() {
         viewModel.getAllUsers()
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.allUsers.collect { getAll(it) }
         }
     }
@@ -89,7 +89,7 @@ class SearchUsersFragment : Fragment(), AllUsersFirestoreAdapter.OnSearchUserIte
                             .setQuery(resource.data.query, Users::class.java).build()
                     arr = options.snapshots
                     binding.rvSearch.layoutManager = LinearLayoutManager(context)
-                    adapter = AllUsersFirestoreAdapter(options, this)
+                    adapter = AllUsersFirestoreAdapter(options, this, auth.currentUser!!.uid)
                     binding.rvSearch.adapter = adapter
                     adapter.startListening()
                 }

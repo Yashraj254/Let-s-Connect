@@ -22,6 +22,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,9 +37,9 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
     private val viewModel: HomeViewModel by activityViewModels()
     private lateinit var arr: ObservableSnapshotArray<Post>
 
-    @Inject
-    lateinit var currentUser: String
-
+     @Inject
+     lateinit var auth: FirebaseAuth
+     private lateinit var currentUser:String
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -56,6 +57,7 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currentUser = auth.currentUser.toString()
         viewModel.getAllPosts()
         setRecyclerView()
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -67,13 +69,13 @@ class HomeFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostIt
         navBar = requireActivity().findViewById(R.id.nav_view)
         val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar)
         actionBar.title = "Home"
-
+        actionBar.isVisible = true
         navBar.visibility = View.VISIBLE
     }
 
     private fun setRecyclerView() {
         viewModel.getAllPosts()
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.allPosts.collect{
                 when (it) {
                     is Resource.Error -> {

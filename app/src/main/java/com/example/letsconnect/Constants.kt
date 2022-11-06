@@ -3,6 +3,7 @@ package com.example.letsconnect
 
 const val KEY_COLLECTION_USERS = "users"
 const val KEY_USER_NAME = "username"
+const val KEY_NAME = "name"
 const val KEY_EMAIL = "email"
 const val KEY_BIO = "bio"
 const val KEY_PROFILE_IMAGE = "profileImage"

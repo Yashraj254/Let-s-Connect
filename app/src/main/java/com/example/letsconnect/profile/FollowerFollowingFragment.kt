@@ -1,7 +1,6 @@
 package com.example.letsconnect.profile
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,31 +12,28 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.letsconnect.R
 import com.example.letsconnect.Resource
-import com.example.letsconnect.adapters.AllUsersFirestoreAdapter
-import com.example.letsconnect.adapters.FollowFirestoreAdapter
+import com.example.letsconnect.adapters.FollowAdapter
 import com.example.letsconnect.databinding.FragmentFollowerFollowingBinding
 import com.example.letsconnect.models.Users
-import com.example.letsconnect.search.SearchViewModel
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.firebase.ui.firestore.ObservableSnapshotArray
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowItemClicked {
+class FollowerFollowingFragment : Fragment(), FollowAdapter.OnFollowItemClicked {
+
 
     private var _binding: FragmentFollowerFollowingBinding? = null
     private val binding get() = _binding!!
     private val viewModel: FollowViewModel by activityViewModels()
-    private lateinit var adapter: FollowFirestoreAdapter
+    private lateinit var adapter: FollowAdapter
     private lateinit var navBar: BottomNavigationView
-    private lateinit var arr: ObservableSnapshotArray<Users>
+    private lateinit var arr: ArrayList<Users>
     private lateinit var title: String
-
+    private lateinit var usersList:String
     @Inject
     lateinit var auth: FirebaseAuth
     override fun onCreateView(
@@ -81,7 +77,7 @@ class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowIte
         }
     }
 
-    private fun getAll(resource: Resource<QuerySnapshot>, btnText: String) {
+    private fun getAll(resource: Resource<ArrayList<String>>, btnText: String) {
         when (resource) {
             is Resource.Error -> {
                 binding.apply {
@@ -104,24 +100,23 @@ class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowIte
                     pbLoading.isVisible = false
                 }
 
-                if (!resource.data!!.isEmpty) {
+                if (resource.data!!.size!=0) {
                     binding.rvSearch.isVisible = true
-                    lifecycleScope.launchWhenCreated {
+                    viewLifecycleOwner.lifecycleScope.launchWhenCreated {
                         viewModel.getAllUserProfiles()
+                        arr = ArrayList()
                         viewModel.allUserProfiles.collect{
-                            if(it.isNotEmpty()) {
-                                val options: FirestoreRecyclerOptions<Users> =
-                                    FirestoreRecyclerOptions.Builder<Users>()
-                                        .setQuery(resource.data.query, Users::class.java).build()
-                                arr = options.snapshots
+                            it.forEach { map->
+                                arr.add(map.value)
+                            }
                                 binding.rvSearch.layoutManager = LinearLayoutManager(context)
-                                adapter = FollowFirestoreAdapter(options,
+                                adapter = FollowAdapter(resource.data,
                                     this@FollowerFollowingFragment,
                                     btnText,
                                     it)
                                 binding.rvSearch.adapter = adapter
-                                adapter.startListening()
-                            }
+
+
                         }
                     }
                 }
@@ -131,8 +126,7 @@ class FollowerFollowingFragment : Fragment(), FollowFirestoreAdapter.OnFollowIte
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (this::adapter.isInitialized)
-            adapter.stopListening()
+
         _binding = null
     }
 

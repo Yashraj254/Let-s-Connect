@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="30dp">
 
         <LinearLayout
             android:id="@+id/status_box"
@@ -83,35 +84,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottie_no_post"
-            android:layout_width="250dp"
-            android:layout_height="350dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/details_layout"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_rawRes="@raw/not_found" />
-
-        <TextView
-            android:id="@+id/tv_no_post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="15dp"
-            android:gravity="center_horizontal"
-            android:text="No posts found..."
-            android:textColor="@color/primary_text"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lottie_no_post"
-            />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/details_layout"
@@ -167,7 +139,7 @@
                         android:id="@+id/et_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter name..."
+                        android:hint="Enter username..."
                         android:textColor="@color/white"
                         android:textColorHint="#FFFFFF" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -197,7 +169,7 @@
                         android:id="@+id/et_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter username..."
+                        android:hint="Enter name..."
                         android:textColor="@color/white"
                         android:textColorHint="#FFFFFF" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -287,5 +259,36 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_no_post"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:scaleType="fitXY"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/details_layout"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/not_found"/>
+
+        <TextView
+            android:id="@+id/tv_no_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center_horizontal"
+            android:text="No posts found..."
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lottie_no_post"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

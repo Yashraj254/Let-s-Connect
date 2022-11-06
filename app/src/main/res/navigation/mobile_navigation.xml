@@ -12,10 +12,15 @@
         tools:layout="@layout/fragment_sign_in">
         <action
             android:id="@+id/action_signInFragment_to_navigation_home"
-            app:destination="@id/navigation_home" />
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/signInFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_signInFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_signInFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
         android:id="@+id/navigation_home"
@@ -31,6 +36,11 @@
         <action
             android:id="@+id/action_navigation_home_to_usersChatFragment"
             app:destination="@id/usersChatFragment" />
+        <action
+            android:id="@+id/action_navigation_home_pop_including_signInFragment"
+            app:popUpTo="@id/signInFragment"
+            app:popUpToInclusive="true" />
+
     </fragment>
 
     <fragment
@@ -125,5 +135,8 @@
         <action
             android:id="@+id/action_signUpFragment_to_signInFragment"
             app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/action_signUpFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
     </fragment>
 </navigation>

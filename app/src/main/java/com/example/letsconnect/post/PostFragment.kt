@@ -1,10 +1,12 @@
 package com.example.letsconnect.post
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -33,7 +35,7 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
     private val viewModel: PostViewModel by activityViewModels()
     private lateinit var options: FirestoreRecyclerOptions<Comment>
     private lateinit var arr: ObservableSnapshotArray<Comment>
-
+    private lateinit var postId:String
     @Inject
     lateinit var currentUser: String
 
@@ -53,7 +55,7 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
         super.onViewCreated(view, savedInstanceState)
         val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
         actionBar.title = "Comments"
-       val postId = arguments?.getString("selected_postId").toString()
+        postId = arguments?.getString("selected_postId").toString()
         showCurrentPost(postId)
 
         binding.btnComment.setOnClickListener {
@@ -109,7 +111,7 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
                                 list = it.data.get("likedBy") as ArrayList<String>
                             binding.apply {
                                 tvUsername.text = it.data.getString(KEY_USER_NAME)
-                                tvEmail.text = it.data.getString(KEY_EMAIL)
+                                tvName.text = it.data.getString(KEY_NAME)
                                 tvPostMessage.text = it.data.getString(KEY_POST_MESSAGE)
                                 tvUploadTime.text =
                                     Utils.getTimeAgo(it.data.getLong(KEY_UPLOAD_TIME)!!)
@@ -135,9 +137,17 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
         postId: String,
         message: String,
     ) {
-        viewModel.addNewComment(postId, message)
+        viewModel.addNewComment(postId, message).observe(viewLifecycleOwner){
+            when(it){
+                is Response.Loading -> {}
+                is Response.Failure -> {}
+                is Response.Success -> {
+                    scrollToLast()
+
+                }
+            }
+        }
         binding.etComment.text = null
-        scrollToLast()
     }
 
     private fun setRecyclerView(postId: String) {
@@ -187,6 +197,7 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
     }
 
     private fun scrollToLast() {
+        if(this::adapter.isInitialized)
         if (adapter.itemCount != 0)
             binding.rvAllComments.smoothScrollToPosition(adapter.itemCount)
     }
@@ -216,4 +227,27 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
         sendData(position)
     }
 
+    override fun onLongClick(position: Int): Boolean {
+        viewModel.getMyPosts().observe(viewLifecycleOwner){
+            when(it){
+                is Response.Loading -> { }
+                is Response.Failure -> { }
+                is Response.Success -> {
+                        if(currentUser == arr[position].userId || it.data.contains(arr[position].postId)){
+                            val alertDialog = AlertDialog.Builder(requireContext())
+                            alertDialog.setTitle("Delete")
+                            alertDialog.setMessage("Are you sure?")
+                            alertDialog.setIcon(R.drawable.ic_delete)
+                            alertDialog.setPositiveButton("Delete", DialogInterface.OnClickListener { _, _ ->
+                                viewModel.deleteComment(arr[position].commentId!!,postId)
+                            }).setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->
+                            })
+                            alertDialog.setCancelable(false).create().show()
+                        }
+                }
+            }
+        }
+
+        return false
+    }
 }

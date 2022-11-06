@@ -20,7 +20,9 @@
             android:id="@+id/details_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
+            android:background="#000000"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -30,9 +32,9 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="5dp"
+                android:src="@drawable/ic_profile_pic"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:src="@drawable/ic_profile_pic"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_username"
@@ -40,17 +42,18 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Username"
-                android:textColor="#000000"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_email"
+                android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/secondary_text"
                 android:layout_margin="5dp"
-                android:text="User mail"
+                android:text="Name"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toBottomOf="@+id/tv_username" />
 
@@ -58,6 +61,7 @@
                 android:id="@+id/tv_upload_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/secondary_text"
                 android:layout_margin="5dp"
                 android:text="Upload Time"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:text="Post Message"
-                android:textColor="#000000"
+                android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:background="#FFFFFF"
+                android:background="#000000"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_post_message"
                 app:srcCompat="@drawable/ic_like" />
@@ -90,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:background="#FFFFFF"
+                android:background="#000000"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtn_like"
                 app:layout_constraintStart_toEndOf="@+id/tv_total_likes"
                 app:layout_constraintTop_toTopOf="@+id/ibtn_like"
@@ -101,6 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="@color/white"
                 android:text="@{String.valueOf(adapter.totalComments)}"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtn_comments"
                 app:layout_constraintStart_toEndOf="@+id/ibtn_comments"
@@ -111,6 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:textColor="@color/white"
                 android:text="Likes"
                 app:layout_constraintBottom_toBottomOf="@+id/ibtn_like"
                 app:layout_constraintStart_toEndOf="@+id/ibtn_like"
@@ -192,6 +198,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:textColor="@color/white"
             android:hint="Enter text..."
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"

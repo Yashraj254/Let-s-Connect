@@ -4,12 +4,12 @@ class Users {
     constructor()
     constructor(
         userId: String,
-        profileImage:String?,
+        profileImage: String?,
         username: String?,
-        name:String?,
+        name: String?,
         email: String?,
-        followers: Int,
-        following: Int,
+        followers: ArrayList<String>,
+        following: ArrayList<String>,
     ) {
         this.userId = userId
         this.username = username
@@ -24,7 +24,7 @@ class Users {
     var username: String? = null
     var name: String? = null
     var email: String? = null
-    var profileImage:String? = null
-    var followers: Int = 0
-    var following: Int = 0
+    var profileImage: String? = null
+    var followers = ArrayList<String>()
+    var following = ArrayList<String>()
 }

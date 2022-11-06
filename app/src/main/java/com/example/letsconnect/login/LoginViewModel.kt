@@ -31,4 +31,15 @@ class LoginViewModel @Inject constructor(private val repository: LoginRepository
         }
     }
 
+    fun getCurrentUser() = liveData(Dispatchers.IO) {
+        repository.getCurrentUser().collect { response ->
+            emit(response)
+        }
+    }
+
+
+
+
+
+
 }

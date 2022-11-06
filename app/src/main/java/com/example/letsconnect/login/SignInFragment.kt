@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
@@ -34,17 +35,19 @@ import dagger.hilt.android.AndroidEntryPoint
 class SignInFragment : Fragment() {
 
     private lateinit var navBar: BottomNavigationView
-    private lateinit var binding: FragmentSignInBinding
+    private  var _binding: FragmentSignInBinding?=null
+    private val binding get() = _binding!!
+
     private val auth = FirebaseAuth.getInstance()
     private lateinit var googleSignInClient: GoogleSignInClient
-
+    private var usernameIsNull = false
     private val viewModel:LoginViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
 
-        binding = FragmentSignInBinding.inflate(inflater, container, false)
+        _binding  = FragmentSignInBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -52,9 +55,36 @@ class SignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (auth.currentUser != null)
-            Navigation.findNavController(requireView())
-                .navigate(R.id.action_signInFragment_to_navigation_home)
+        if (auth.currentUser != null) {
+            viewModel.getCurrentUser().observe(viewLifecycleOwner){
+                when(it){
+                    is Response.Loading->{
+                        binding.progressBar.isVisible = true
+                    }
+                    is Response.Success->{
+                        binding.progressBar.isVisible = false
+                        usernameIsNull = it.data?.username ==null
+                        if(it.data?.username!=null){
+                            Navigation.findNavController(requireView())
+                                .navigate(R.id.action_signInFragment_to_navigation_home)
+                        }else{
+                            Navigation.findNavController(requireView())
+                                .navigate(R.id.action_signInFragment_to_navigation_profile)
+                        }
+                    }
+                    is Response.Failure->{
+                        showSnackBar("Failed: "+it.errorMessage.toString())
+                    }
+                }
+            }
+        }
+        else{
+            binding.apply {
+                tvTitle.isVisible = false
+                layoutSignIn.isVisible = true
+            }
+        }
+
         setListeners()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -91,7 +121,7 @@ class SignInFragment : Fragment() {
         viewModel.signInWithGoogle(idToken).observe(this) { response ->
             when (response) {
                 is Response.Loading -> {
-                    showSnackBar("Loading")
+
                 }
                 is Response.Success<*> -> {
                     val isNewUser = response.data
@@ -100,10 +130,10 @@ class SignInFragment : Fragment() {
                             when(it){
                                 is Response.Loading -> { }
                                 is Response.Success -> {
-                                    showSnackBar("New account")
+
                                 }
                                 is Response.Failure -> {
-                                    showSnackBar("Error occured")
+                                    showSnackBar("Error: "+it.errorMessage)
                                 }
                             }
                         }
@@ -112,9 +142,12 @@ class SignInFragment : Fragment() {
                             .navigate(R.id.action_signInFragment_to_signUpFragment)
 
                     } else {
-                     showSnackBar("old user")
+                        if(usernameIsNull)
                         Navigation.findNavController(requireView())
-                            .navigate(R.id.action_signInFragment_to_navigation_home)
+                            .navigate(R.id.action_signInFragment_to_navigation_profile)
+                        else
+                            Navigation.findNavController(requireView())
+                                .navigate(R.id.action_signInFragment_to_navigation_home)
                     }
                 }
                 is Response.Failure -> {
@@ -143,8 +176,8 @@ class SignInFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         navBar = requireActivity().findViewById(R.id.nav_view)
         val actionBar = requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar)
-        actionBar.title = "Sign In"
-
+        actionBar.isVisible = false
+        actionBar.title = null
         navBar.visibility = View.GONE
     }
 
@@ -194,4 +227,8 @@ class SignInFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

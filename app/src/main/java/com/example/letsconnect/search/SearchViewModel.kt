@@ -3,6 +3,7 @@ package com.example.letsconnect.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.letsconnect.Resource
+import com.example.letsconnect.models.Users
 import com.example.letsconnect.repository.UserRepository
 import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -143,7 +143,7 @@ class LikedPostsFragment : Fragment(),LikedPostsFirestoreAdapter.OnPostItemClick
         val bundle = Bundle()
         bundle.putString("selected_postId", arr[position].postId)
         Navigation.findNavController(requireView())
-            .navigate(R.id.action_navigation_home_to_postFragment,
+            .navigate(R.id.action_navigation_liked_posts_to_postFragment,
                 bundle)
     }
 
