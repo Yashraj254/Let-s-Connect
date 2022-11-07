@@ -1,6 +1,7 @@
 package com.example.letsconnect.search
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.letsconnect.Resource
 import com.example.letsconnect.models.Users
@@ -20,12 +21,10 @@ class SearchViewModel @Inject constructor(private val repository: UserRepository
     private var _allUsers: MutableStateFlow<Resource<QuerySnapshot>> = MutableStateFlow(Resource.Loading())
     val allUsers: StateFlow<Resource<QuerySnapshot>> = _allUsers
 
-
-
-    fun getAllUsers() = viewModelScope.launch(Dispatchers.IO) {
-        _allUsers.emit(repository.getAllUsers())
+    fun getAllUsers() = liveData(Dispatchers.IO) {
+        (repository.getAllUsers().collect{
+            response->emit(response)
+        })
     }
-
-
 
 }

@@ -2,8 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@id/usersChatFragment"
+        android:id="@+id/menu_btn_edit"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="Edit"/>
+
+    <item
+        android:id="@+id/menu_btn_save"
+        android:icon="@drawable/ic_save"
+        app:showAsAction="always"
+        android:visible="false"
+        android:title="Save"/>
+
+    <item
+        android:id="@+id/menu_btn_logout"
         android:icon="@drawable/ic_logout"
         app:showAsAction="always"
         android:title="Login"/>
+
+
+
+
+
 </menu>

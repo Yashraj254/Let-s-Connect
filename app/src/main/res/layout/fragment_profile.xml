@@ -10,8 +10,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="30dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/status_box"
@@ -64,14 +63,14 @@
             android:id="@+id/rv_my_posts"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginBottom="?attr/actionBarSize"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details_layout"
-            app:layout_constraintVertical_bias="0.272">
+            app:layout_constraintTop_toBottomOf="@+id/details_layout" />
 
-        </androidx.recyclerview.widget.RecyclerView>
+
 
         <ProgressBar
             android:id="@+id/pb_loading"
@@ -98,7 +97,7 @@
                 android:id="@+id/iv_profile_image"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="20dp"
                 android:src="@drawable/ic_profile_pic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +132,7 @@
                     android:layout_marginEnd="20dp"
                     android:textColorHint="@color/secondary_text"
                     android:visibility="gone"
-                    app:boxStrokeColor="#6C757D">
+                    app:boxStrokeColor="#2191F4">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_username"
@@ -163,7 +162,7 @@
                     android:layout_marginEnd="20dp"
                     android:textColorHint="#6C757D"
                     android:visibility="gone"
-                    app:boxStrokeColor="#6C757D">
+                    app:boxStrokeColor="#2191F4">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_name"
@@ -234,28 +233,28 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/iv_profile_image" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_update"
-                android:layout_width="250dp"
+             <Button
+                android:id="@+id/btn_unfollow"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Update"
-                app:cornerRadius="30dp"
-                app:layout_constraintBottom_toTopOf="@id/iv_profile_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_save"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="Unfollow"
                 android:visibility="gone"
-                app:cornerRadius="30dp"
-                app:layout_constraintBottom_toTopOf="@id/iv_profile_image"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_profile_image"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/iv_profile_image" />
+
+
+
+
+
+            <ImageView
+                android:id="@+id/iv_add_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_profile_image"
+                app:layout_constraintEnd_toEndOf="@+id/iv_profile_image" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -271,7 +270,8 @@
             app:layout_constraintTop_toBottomOf="@id/details_layout"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/not_found"/>
+            app:lottie_rawRes="@raw/not_found"
+            />
 
         <TextView
             android:id="@+id/tv_no_post"

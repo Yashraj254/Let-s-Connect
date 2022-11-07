@@ -23,6 +23,7 @@ import com.firebase.ui.firestore.ObservableSnapshotArray
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -142,7 +143,10 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
                 is Response.Loading -> {}
                 is Response.Failure -> {}
                 is Response.Success -> {
+                    if (it.data.posted)
                     scrollToLast()
+                    if(it.data.size == 1)
+                        viewModel.getAllComments(postId)
 
                 }
             }
@@ -151,9 +155,9 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
     }
 
     private fun setRecyclerView(postId: String) {
-        viewModel.getAllComments(postId)
-        lifecycleScope.launchWhenCreated {
-            viewModel.allComments.collect {
+            viewModel.getAllComments(postId)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.allComments.collect{
                 when (it) {
                     is Resource.Error -> {
                         binding.apply {
@@ -194,6 +198,9 @@ class PostFragment : Fragment(), AllCommentsFirestoreAdapter.OnCommentItemClicke
                 }
             }
         }
+
+
+
     }
 
     private fun scrollToLast() {

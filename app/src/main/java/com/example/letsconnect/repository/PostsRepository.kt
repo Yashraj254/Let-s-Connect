@@ -3,6 +3,7 @@ package com.example.letsconnect.repository
 import android.content.Context
 import android.provider.SyncStateContract.Helpers.update
 import com.example.letsconnect.*
+import com.example.letsconnect.models.CommentResponse
 import com.example.letsconnect.models.Post
 import com.example.letsconnect.models.Users
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,6 @@ class PostsRepository @Inject constructor(
 ) : BaseRepo(context) {
     private val databaseRef = database.collection("chats")
     private val allPostRef = database.collection(KEY_ALL_POSTS)
-    private val currentUser = auth.currentUser!!.uid
     suspend fun showCurrentPost(postId: String): Resource<DocumentSnapshot> = safeApiCall {
         database.collection(KEY_ALL_POSTS).document(postId).get()
     }
@@ -41,6 +41,8 @@ class PostsRepository @Inject constructor(
     }
 
     suspend fun deletePost(postId: String) = safeApiCall {
+        val currentUser = auth.currentUser!!.uid
+
         database.collection(KEY_ALL_POSTS).document(postId).delete()
         database.collection(KEY_COLLECTION_USERS).document(currentUser)
             .collection("myPosts").document(postId).delete()
@@ -51,6 +53,14 @@ class PostsRepository @Inject constructor(
 
     suspend fun deleteComment(commentId:String,postId: String) = safeApiCall {
         database.collection(KEY_ALL_POSTS).document(postId).collection("comments").document(commentId).delete()
+        database.collection(KEY_ALL_POSTS).document(postId).collection("comments").get()
+            .onSuccessTask {
+                val totalComments = it.size()
+                val obj = mutableMapOf<String, Int>()
+                obj[KEY_TOTAL_COMMENTS] = totalComments
+                database.collection(KEY_ALL_POSTS).document(postId)
+                    .update(obj as Map<String, Any>)
+            }
     }
 
     suspend fun showCurrentUserPosts(userId: String): Resource<QuerySnapshot> = safeApiCall {
@@ -138,16 +148,20 @@ class PostsRepository @Inject constructor(
                     comment[KEY_PROFILE_IMAGE] = it.getString(KEY_PROFILE_IMAGE).toString()
                 val date = Date()
                 comment[KEY_UPLOAD_TIME] = date.time
-                emit(Response.Success(true))
                 database.collection(KEY_ALL_POSTS).document(postId).collection("comments").document(commentId)
-                    .set(comment).onSuccessTask {
+                    .set(comment).await().also {
                         database.collection(KEY_ALL_POSTS).document(postId).collection("comments").get()
-                            .onSuccessTask {
+                            .await().also {
                                 val totalComments = it.size()
+
                                 val obj = mutableMapOf<String, Int>()
                                 obj[KEY_TOTAL_COMMENTS] = totalComments
                                 database.collection(KEY_ALL_POSTS).document(postId)
-                                    .update(obj as Map<String, Any>)
+                                    .update(obj as Map<String, Any>).await().also {
+                                        emit(Response.Success(CommentResponse(true,totalComments)))
+
+                                    }
+
                                 database.collection("users").document(userId).collection("myPosts")
                                     .get().addOnSuccessListener {
                                         for (i in it) {
@@ -181,12 +195,16 @@ class PostsRepository @Inject constructor(
 
     }
 
-    suspend fun getAllComments(postId: String): Resource<QuerySnapshot> = safeApiCall {
-        database.collection(KEY_ALL_POSTS).document(postId).collection("comments")
-            .orderBy("uploadTime").get()
+    suspend fun getAllComments(postId: String):Resource<QuerySnapshot> = safeApiCall {
+            database.collection(KEY_ALL_POSTS).document(postId).collection("comments")
+                .orderBy("uploadTime").get()
+
+
     }
 
     suspend fun likePost(post: Post) = safeApiCall {
+        val currentUser = auth.currentUser!!.uid
+
         val list = post.likedBy
         val isLiked = list.contains(currentUser)
         if (isLiked) {

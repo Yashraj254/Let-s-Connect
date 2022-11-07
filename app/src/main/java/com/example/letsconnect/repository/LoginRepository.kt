@@ -16,9 +16,9 @@ import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     private val database: FirebaseFirestore,
+    private val auth: FirebaseAuth,
     @ApplicationContext private val context: Context,
 ) : BaseRepo(context) {
-    val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     suspend fun firebaseSignInWithGoogle(idToken: String) = flow {
 
@@ -43,8 +43,9 @@ class LoginRepository @Inject constructor(
 
             user?.reauthenticate(credential)?.addOnCompleteListener {
                 Log.d("Login Repo", "account deleted: ")
-                user.delete()
                 auth.signOut()
+                user.delete()
+
             }
 
         } catch (e: Exception) {

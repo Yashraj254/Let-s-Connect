@@ -1,5 +1,6 @@
 package com.example.letsconnect.search
 
+import android.media.CamcorderProfile.getAll
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,26 +12,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.letsconnect.R
-import com.example.letsconnect.Resource
-import com.example.letsconnect.adapters.AllUsersFirestoreAdapter
+import com.example.letsconnect.Response
+import com.example.letsconnect.adapters.AllUsersAdapter
 import com.example.letsconnect.databinding.FragmentSearchUsersBinding
 import com.example.letsconnect.models.Users
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.firebase.ui.firestore.ObservableSnapshotArray
+import com.example.letsconnect.showSnackBar
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.QuerySnapshot
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SearchUsersFragment : Fragment(), AllUsersFirestoreAdapter.OnSearchUserItemClicked {
+class SearchUsersFragment : Fragment(), AllUsersAdapter.OnSearchUserItemClicked {
     private var _binding: FragmentSearchUsersBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SearchViewModel by activityViewModels()
-    private lateinit var adapter: AllUsersFirestoreAdapter
-    private lateinit var arr: ObservableSnapshotArray<Users>
+    private lateinit var adapter: AllUsersAdapter
+    private lateinit var arr: ArrayList<Users>
 
     @Inject
     lateinit var auth: FirebaseAuth
@@ -50,58 +48,52 @@ class SearchUsersFragment : Fragment(), AllUsersFirestoreAdapter.OnSearchUserIte
         val actionBar =  requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar);
         actionBar.title = "All Users"
         setRecyclerView()
+        binding.retryButton.setOnClickListener {
+            setRecyclerView()
+        }
     }
 
     private fun setRecyclerView() {
-        viewModel.getAllUsers()
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.allUsers.collect { getAll(it) }
-        }
-    }
-
-    private fun getAll(resource: Resource<QuerySnapshot>) {
-        when (resource) {
-            is Resource.Error -> {
-                binding.apply {
-                    statusBox.isVisible = true
-                    rvSearch.isVisible = false
-                    pbLoading.isVisible = false
+        viewModel.getAllUsers().observe(viewLifecycleOwner){
+            when(it){
+                is Response.Failure -> {
+                    showSnackBar("Error: "+it.errorMessage)
+                    binding.apply {
+                        statusBox.isVisible = true
+                        rvSearch.isVisible = false
+                        pbLoading.isVisible = false
+                    }
                 }
-            }
-            is Resource.Loading -> {
-                binding.apply {
-                    statusBox.isVisible = false
-                    rvSearch.isVisible = false
-                    pbLoading.isVisible = true
+                is Response.Loading -> {
+                    binding.apply {
+                        statusBox.isVisible = false
+                        rvSearch.isVisible = false
+                        pbLoading.isVisible = true
+                    }
                 }
-            }
+                is Response.Success -> {
+                    binding.apply {
+                        statusBox.isVisible = false
+                        pbLoading.isVisible = false
+                    }
 
-            is Resource.Success -> {
-                binding.apply {
-                    statusBox.isVisible = false
-                    pbLoading.isVisible = false
-                }
+                    if (it.data.isNotEmpty()) {
+                        binding.rvSearch.isVisible = true
 
-                if (!resource.data!!.isEmpty) {
-                    binding.rvSearch.isVisible = true
-                    val options: FirestoreRecyclerOptions<Users> =
-                        FirestoreRecyclerOptions.Builder<Users>()
-                            .setQuery(resource.data.query, Users::class.java).build()
-                    arr = options.snapshots
-                    binding.rvSearch.layoutManager = LinearLayoutManager(context)
-                    adapter = AllUsersFirestoreAdapter(options, this, auth.currentUser!!.uid)
-                    binding.rvSearch.adapter = adapter
-                    adapter.startListening()
+                        arr = it.data as ArrayList<Users>
+                        binding.rvSearch.layoutManager = LinearLayoutManager(context)
+                        adapter = AllUsersAdapter(it.data, this, auth.currentUser!!.uid)
+                        binding.rvSearch.adapter = adapter
+
+                    }
                 }
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
-        if (this::adapter.isInitialized)
-            adapter.stopListening()
+
         _binding = null
     }
 

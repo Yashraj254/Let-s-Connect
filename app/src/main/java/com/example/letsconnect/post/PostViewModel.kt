@@ -34,7 +34,7 @@ class PostViewModel @Inject constructor(private val repository: PostsRepository)
 
      fun getAllComments(postId:String) = viewModelScope.launch(Dispatchers.IO){
          _allComments.emit(Resource.Loading())
-         _allComments.emit(repository.getAllComments(postId))
+         _allComments.emit( repository.getAllComments(postId))
     }
 
     fun addNewComment(postId: String,message:String) = liveData(Dispatchers.IO){

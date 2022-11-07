@@ -33,20 +33,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
+import javax.inject.Inject
 import kotlin.collections.HashMap
 import kotlin.collections.Map
 import kotlin.collections.mutableMapOf
 import kotlin.collections.set
 
 
+@AndroidEntryPoint
 class SignUpFragment : Fragment() {
     private val TAG = "SignUpFragment"
     private lateinit var binding: FragmentSignUpBinding
     private lateinit var encodedImage: ByteArray
-    private val auth = FirebaseAuth.getInstance()
-
+    @Inject
+    lateinit var auth:FirebaseAuth
     // private lateinit var preferenceManager:
     private lateinit var navBar: BottomNavigationView
     private val viewModel: LoginViewModel by activityViewModels()
@@ -71,12 +74,13 @@ class SignUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        auth.signOut()
         navBar = requireActivity().findViewById(R.id.nav_view)
         navBar.isVisible = false
         val actionBar = requireActivity().findViewById<MaterialToolbar>(R.id.materialToolbar)
         actionBar.title = "Sign Up"
         setListeners()
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
 
@@ -251,7 +255,6 @@ class SignUpFragment : Fragment() {
                                 }
                                 bitmap = BitmapFactory.decodeStream(inputStream)
                                 binding.imageProfile.setImageBitmap(bitmap)
-                                binding.textAddImage.visibility = View.GONE
                                 encodedImage = encodeImage(bitmap)
                             } catch (e: FileNotFoundException) {
                                 e.printStackTrace()

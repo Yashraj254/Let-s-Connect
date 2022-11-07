@@ -14,7 +14,7 @@
 
         <variable
             name="OnSearchUserItemClicked"
-            type="com.example.letsconnect.adapters.AllUsersFirestoreAdapter.OnSearchUserItemClicked" />
+            type="com.example.letsconnect.adapters.AllUsersAdapter.OnSearchUserItemClicked" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:textColorHint="#6C757D"
+        app:boxStrokeColor="#2191F4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

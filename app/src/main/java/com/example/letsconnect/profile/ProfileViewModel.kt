@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.letsconnect.KEY_FOLLOWERS
-import com.example.letsconnect.KEY_FOLLOWING
 import com.example.letsconnect.Resource
 import com.example.letsconnect.models.Post
 import com.example.letsconnect.repository.PostsRepository
@@ -15,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,31 +59,28 @@ class ProfileViewModel @Inject constructor(
     }
 
 
-    fun followUser(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        repository.followUser(userId)
+    fun followUser(userId: String) = liveData(Dispatchers.IO) {
+        repository.followUser(userId).collect{
+            response->emit(response)
+        }
     }
 
-    fun checkIfFollowing(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _following.emit(Resource.Loading())
-        val user = repository.getUser(userId)
-        if (user.data?.get(KEY_FOLLOWERS) != null) {
-            val followers = user.data.get(KEY_FOLLOWERS) as ArrayList<String>
-            if (followers.contains(userId))
-                _following.emit(Resource.Success(true))
-            else
-                _following.emit(Resource.Success(false))
-        } else
-            _following.emit(Resource.Success(false))
-
-
+    fun checkIfFollowing(userId: String) = liveData(Dispatchers.IO) {
+        repository.checkIfFollowing(userId).collect{
+         response->emit(response)
+        }
     }
-
+     fun userSignOut(){
+        repository.userSignOut()
+    }
     fun likePost(post: Post) = viewModelScope.launch(Dispatchers.IO) {
         repo.likePost(post)
     }
 
-    fun unfollowUser(userId: String) = viewModelScope.launch(Dispatchers.IO) {
-        repository.unfollowUser(userId)
+    fun unfollowUser(userId: String) = liveData(Dispatchers.IO) {
+        repository.unfollowUser(userId).collect{
+            response-> emit(response)
+        }
     }
 
     fun uploadProfilePic(encodedImage: ByteArray) = viewModelScope.launch(Dispatchers.IO) {
@@ -94,8 +91,10 @@ class ProfileViewModel @Inject constructor(
         repo.deletePost(postId)
     }
 
-    fun updateProfile(name: String, username: String) = viewModelScope.launch(Dispatchers.IO) {
-        repository.updateUserProfile(name, username)
+    fun updateProfile(name: String, username: String) = liveData(Dispatchers.IO) {
+        repository.updateUserProfile(name, username).collect{
+            response-> emit(response)
+        }
     }
 
     fun checkUsername(username: String) = liveData(Dispatchers.IO) {

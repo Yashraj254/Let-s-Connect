@@ -29,6 +29,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -38,7 +39,8 @@ class SignInFragment : Fragment() {
     private  var _binding: FragmentSignInBinding?=null
     private val binding get() = _binding!!
 
-    private val auth = FirebaseAuth.getInstance()
+    @Inject
+    lateinit var auth:FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private var usernameIsNull = false
     private val viewModel:LoginViewModel by activityViewModels()
@@ -130,7 +132,7 @@ class SignInFragment : Fragment() {
                             when(it){
                                 is Response.Loading -> { }
                                 is Response.Success -> {
-
+                                    auth.signOut()
                                 }
                                 is Response.Failure -> {
                                     showSnackBar("Error: "+it.errorMessage)

@@ -26,7 +26,8 @@
             android:text="Let's Connect"
             android:textColor="#FFFFFF"
             android:textSize="48sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/layout_sign_in"
@@ -64,21 +65,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_40sdp"
                 android:textColorHint="@color/secondary_text"
-                app:boxStrokeColor="#6C757D">
+                app:boxStrokeColor="#2191F4">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_email"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
-                    android:background="@android:color/transparent"
-                    android:ems="10"
+                    android:layout_height="wrap_content"
                     android:hint="Enter email..."
                     android:inputType="textEmailAddress"
-                    android:paddingStart="@dimen/_16sdp"
-                    android:paddingEnd="@dimen/_16sdp"
                     android:textColor="@color/white"
-                    android:textColorHint="#FFFFFF"
-                    android:textSize="@dimen/_13ssp" />
+                    android:textColorHint="#FFFFFF" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -88,25 +84,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_40sdp"
                 android:textColorHint="@color/secondary_text"
-                app:boxStrokeColor="#6C757D">
+                app:boxStrokeColor="#2191F4">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/input_password"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
-                    android:background="@android:color/transparent"
-                    android:ems="10"
+                    android:layout_height="wrap_content"
                     android:hint="Enter password..."
                     android:inputType="textPassword"
-                    android:paddingStart="@dimen/_16sdp"
-                    android:paddingEnd="@dimen/_16sdp"
                     android:textColor="@color/white"
-                    android:textColorHint="#FFFFFF"
-                    android:textSize="@dimen/_13ssp" />
+                    android:textColorHint="#FFFFFF" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <FrameLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_20sdp"
@@ -114,32 +105,42 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonSignIn"
-                    android:layout_width="match_parent"
+                    android:layout_width="150dp"
                     android:layout_height="@dimen/_50sdp"
                     android:text="@string/sign_in"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
-                    app:cornerRadius="@dimen/_8sdp" />
+                    app:cornerRadius="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
                     android:layout_width="@dimen/_25sdp"
                     android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
-                    android:visibility="gone" />
-            </FrameLayout>
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/googleSignIn"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_marginTop="20dp"
-                android:background="@android:color/transparent"
-                android:text="@string/sign_in"
-                android:textSize="@dimen/_13ssp"
-                android:textStyle="bold"
-                app:cornerRadius="@dimen/_8sdp" />
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/googleSignIn"
+                    android:layout_width="150dp"
+                    android:layout_height="@dimen/_50sdp"
+                    android:background="@android:color/transparent"
+                    android:text="@string/sign_in"
+                    android:textSize="@dimen/_13ssp"
+                    android:textStyle="bold"
+                    app:cornerRadius="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <TextView
                 android:id="@+id/createNew"

@@ -9,14 +9,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -41,6 +39,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPostItemClicked {
@@ -56,12 +55,13 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
     private lateinit var adapter: AllPostsFirestoreAdapter
     private lateinit var arr: ObservableSnapshotArray<Post>
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var menuBtnEdit: MenuItem
+    private lateinit var menuBtnSave: MenuItem
+    private var selectedUser: String? = null
 
-
-    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    @Inject
+    lateinit var auth: FirebaseAuth
     private lateinit var currentUser: String
-
-
 
 
     override fun onCreateView(
@@ -80,7 +80,7 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         currentUser = auth.currentUser!!.uid
 
-        var selectedUser = arguments?.getString("selected_userId")
+        selectedUser = arguments?.getString("selected_userId")
         navBar = requireActivity().findViewById(R.id.nav_view)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -94,15 +94,14 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
 
         if (selectedUser != null) {
 
-            checkIfFollowing(selectedUser)
-            navBar.visibility = View.GONE
+            checkIfFollowing(selectedUser!!)
 
             if (selectedUser.toString() != currentUser)
                 binding.btnFollow.visibility = View.VISIBLE
         } else {
 
             selectedUser = currentUser
-            showCurrentUser(selectedUser)
+            showCurrentUser(selectedUser!!)
             binding.ivProfileImage.setOnClickListener {
                 val intent =
                     Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -111,10 +110,10 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
             }
         }
         binding.btnFollow.setOnClickListener {
-            if (binding.btnFollow.text.toString().lowercase() == "follow")
-                followUser(selectedUser.toString())
-            else
-                unfollowUser(selectedUser.toString())
+            followUser(selectedUser.toString())
+        }
+        binding.btnUnfollow.setOnClickListener {
+            unfollowUser(selectedUser.toString())
         }
         binding.apply {
             val bundle = Bundle()
@@ -135,57 +134,11 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
                 viewModel.getCurrentUserDetails(selectedUser.toString())
                 viewModel.getCurrentUserPosts(selectedUser.toString())
             }
-
-            btnUpdate.setOnClickListener {
-                etUsername.setText(tvUsername.text.toString())
-                etName.setText(tvName.text.toString())
-                etLayoutName.isVisible = true
-                etLayoutUsername.isVisible = true
-                tvName.isVisible = false
-                tvUsername.isVisible = false
-                btnUpdate.isVisible = false
-                btnSave.isVisible = true
-            }
-
-            btnSave.setOnClickListener {
-                if (isValid()) {
-                    val name = etName.text.toString()
-                    val username = etUsername.text.toString()
-                    viewModel.checkUsername(username).observe(viewLifecycleOwner) {
-                        when (it) {
-                            is Response.Loading -> {
-                                binding.pbLoading.isVisible = true
-                            }
-                            is Response.Failure -> {
-                                binding.pbLoading.isVisible = false
-
-                                showSnackBar("Error: "+it.errorMessage)
-                            }
-                            is Response.Success -> {
-                                binding.pbLoading.isVisible = false
-
-                                if (it.data) {
-                                    showSnackBar("Username already taken")
-                                } else {
-                                    navBar.visibility = View.VISIBLE
-                                    viewModel.updateProfile(name, username)
-                                    btnUpdate.isVisible = true
-                                    btnSave.isVisible = false
-                                    etLayoutName.isVisible = false
-                                    etLayoutUsername.isVisible = false
-                                    tvName.isVisible = true
-                                    tvUsername.isVisible = true
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
         }
     }
 
     private fun isValid(): Boolean {
+
         if (binding.etName.text.toString().trim().isEmpty()) {
             showToast("Enter name")
             return false
@@ -200,91 +153,159 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         this.menu = menu
         menuInflater.inflate(R.menu.login_menu, menu)
+        menuBtnEdit = menu.findItem(R.id.menu_btn_edit)
+        menuBtnSave = menu.findItem(R.id.menu_btn_save)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        val alertDialog = AlertDialog.Builder(requireContext())
-        alertDialog.setTitle("Logout")
-        alertDialog.setMessage("Are you sure?")
-        alertDialog.setIcon(R.drawable.ic_logout)
-        alertDialog.setPositiveButton("Logout", DialogInterface.OnClickListener { _, _ ->
-            navBar.isVisible = false
-            auth.signOut()
-            googleSignInClient.signOut()
-            Navigation.findNavController(requireView())
-                .navigate(R.id.action_navigation_profile_to_signInFragment)
-        }).setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->
-        })
-        alertDialog.setCancelable(false).create().show()
+
+//        val menuBtnLogout = menu?.getItem(R.id.menu_btn_logout)
+        when (menuItem.itemId) {
+            R.id.menu_btn_edit -> {
+                binding.apply {
+                    ivAddImage.isVisible = true
+                    etUsername.setText(tvUsername.text.toString())
+                    etName.setText(tvName.text.toString())
+                    etLayoutName.isVisible = true
+                    etLayoutUsername.isVisible = true
+                    tvName.isVisible = false
+                    tvUsername.isVisible = false
+                    menuBtnEdit.isVisible = false
+                    menuBtnSave.isVisible = true
+                }
+            }
+            R.id.menu_btn_save -> {
+                binding.apply {
+                    if (isValid()) {
+                        val name = etName.text.toString()
+                        val username = etUsername.text.toString()
+                        viewModel.checkUsername(username).observe(viewLifecycleOwner) {
+                            when (it) {
+                                is Response.Loading -> {
+                                    binding.pbLoading.isVisible = true
+                                }
+                                is Response.Failure -> {
+                                    binding.pbLoading.isVisible = false
+
+                                    showSnackBar("Error: " + it.errorMessage)
+                                }
+                                is Response.Success -> {
+                                    binding.pbLoading.isVisible = false
+                                    ivAddImage.isVisible = false
+                                    if (it.data) {
+                                        showSnackBar("Username already taken")
+                                    } else {
+                                        navBar.visibility = View.VISIBLE
+                                        viewModel.updateProfile(name, username)
+                                            .observe(viewLifecycleOwner) { profile ->
+                                                when (profile) {
+                                                    is Response.Failure -> {}
+                                                    is Response.Loading -> {}
+                                                    is Response.Success -> {
+                                                        tvName.text = etName.text.toString()
+                                                        tvUsername.text = etUsername.text.toString()
+                                                    }
+                                                }
+                                            }
+                                        menuBtnEdit.isVisible = true
+                                        menuBtnSave.isVisible = false
+                                        etLayoutName.isVisible = false
+                                        etLayoutUsername.isVisible = false
+                                        tvName.isVisible = true
+                                        tvUsername.isVisible = true
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            }
+            R.id.menu_btn_logout -> {
+                val alertDialog = AlertDialog.Builder(requireContext())
+                alertDialog.setTitle("Logout")
+                alertDialog.setMessage("Are you sure?")
+                alertDialog.setIcon(R.drawable.ic_logout)
+                alertDialog.setPositiveButton("Logout", DialogInterface.OnClickListener { _, _ ->
+                    navBar.isVisible = false
+                    viewModel.userSignOut()
+                    auth.signOut()
+                    googleSignInClient.signOut()
+                    Navigation.findNavController(requireView())
+                        .navigate(R.id.action_navigation_profile_to_signInFragment)
+                }).setNegativeButton("Cancel", DialogInterface.OnClickListener { _, _ ->
+                })
+                alertDialog.setCancelable(false).create().show()
+            }
+        }
+
 
         return false
     }
 
     private fun checkIfFollowing(userId: String) {
 
-        viewModel.checkIfFollowing(userId)
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.following.collect() {
-                when (it) {
-                    is Resource.Error -> {
-                        showSnackBar(message = it.message!!)
-                        binding.apply {
-                            statusBox.isVisible = true
-                            detailsLayout.isVisible = false
-                            pbLoading.isVisible = false
-                            rvMyPosts.isVisible = false
-                        }
+        viewModel.checkIfFollowing(userId).observe(viewLifecycleOwner) {
+            when (it) {
+                is Response.Failure -> {
+                    showSnackBar(it.errorMessage)
+                    binding.apply {
+                        statusBox.isVisible = true
+                        detailsLayout.isVisible = false
+                        pbLoading.isVisible = false
+                        rvMyPosts.isVisible = false
                     }
-                    is Resource.Loading -> {
-                        binding.apply {
-                            statusBox.isVisible = false
-                            detailsLayout.isVisible = false
-                            pbLoading.isVisible = true
-                            rvMyPosts.isVisible = false
-                        }
+                    menuBtnEdit.isVisible = false
+                }
+                is Response.Loading -> {
+                    binding.apply {
+                        statusBox.isVisible = false
+                        detailsLayout.isVisible = false
+                        pbLoading.isVisible = true
+                        rvMyPosts.isVisible = false
+                    }
+                }
+                is Response.Success -> {
+                    if (it.data) {
+                        binding.btnUnfollow.isVisible = true
+                    } else
+                        binding.btnFollow.isVisible = true
 
-                    }
-                    is Resource.Success -> {
-                        if (it.data == true) {
-                            binding.btnFollow.text = "Unfollow"
-                        }
-                        showCurrentUser(userId)
+                    showCurrentUser(userId)
+                }
+            }
+        }
+
+    }
+
+    private fun unfollowUser(userId: String) {
+        viewModel.unfollowUser(userId).observe(viewLifecycleOwner) {
+            when (it) {
+                is Response.Failure -> {}
+                is Response.Loading -> {}
+                is Response.Success -> {
+                    binding.apply {
+                        btnFollow.isVisible = true
+                        btnUnfollow.isVisible = false
                     }
                 }
             }
         }
     }
 
-    private fun unfollowUser(userId: String) {
-        viewModel.unfollowUser(userId)
-    }
-
     private fun followUser(userId: String) {
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.followUser(userId)
-            binding.apply {
-                btnFollow.text = "Unfollow"
+        viewModel.followUser(userId).observe(viewLifecycleOwner) {
+            when (it) {
+                is Response.Failure -> {}
+                is Response.Loading -> {}
+                is Response.Success -> {
+                    binding.apply {
+                        btnFollow.isVisible = false
+                        btnUnfollow.isVisible = true
+                    }
+                }
             }
-//            viewModel.currentUserDetails.collect {
-//                when (it) {
-//                    is Resource.Error -> {
-//                        showSnackBar(message = it.message!!)
-//                    }
-//                    is Resource.Loading -> {
-//
-//                    }
-//                    is Resource.Success -> {
-//                        if (it.data!!.exists()) {
-////                            viewModel.followUser(userId)
-//                            showCurrentUser(userId)
-//
-//                            binding.apply {
-//                                btnFollow.text = "Unfollow"
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
     }
 
@@ -313,6 +334,8 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
                             statusBox.isVisible = false
                             pbLoading.isVisible = false
                         }
+                        if (auth.currentUser!!.uid == userId)
+                            menuBtnEdit.isVisible = true
                         if (it.data!!.exists()) {
                             val followers = it.data.get(KEY_FOLLOWERS) as ArrayList<String>
                             val totalFollowers = followers.size
@@ -328,16 +351,21 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
                                     tvUsername.isVisible = false
                                     etLayoutName.isVisible = true
                                     etLayoutUsername.isVisible = true
-                                    btnUpdate.isVisible = false
-                                    btnSave.isVisible = true
+                                    menuBtnEdit.isVisible = false
+                                    menuBtnSave.isVisible = true
                                 }
-                            }else{
+                            } else {
                                 navBar.visibility = View.VISIBLE
 
                             }
                             binding.apply {
                                 tvName.text = it.data.getString("name")
-                                tvEmail.text = it.data.getString(KEY_EMAIL)
+                                if (auth.currentUser!!.uid == selectedUser)
+                                    tvEmail.text = it.data.getString(KEY_EMAIL)
+                                else {
+                                    tvEmail.visibility = View.GONE
+                                    navBar.visibility = View.GONE
+                                }
                                 etName.setText(tvName.text)
 
                                 tvUsername.text = username
@@ -411,16 +439,10 @@ class ProfileFragment : Fragment(), MenuProvider, AllPostsFirestoreAdapter.OnPos
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-//    override fun onStop() {
-//        super.onStop()
-//        binding.lottieNoPost.isVisible = false
-//        binding.tvNoPost.isVisible = false
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
-//        binding.detailsLayout.visibility = View.GONE
-//        binding.rvMyPosts.visibility = View.GONE
+
         if (this::adapter.isInitialized) adapter.stopListening()
         _binding = null
     }

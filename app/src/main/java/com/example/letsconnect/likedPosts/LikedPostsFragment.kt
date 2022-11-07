@@ -61,7 +61,7 @@ class LikedPostsFragment : Fragment(),LikedPostsFirestoreAdapter.OnPostItemClick
     }
     private fun setRecyclerView() {
         viewModel.getLikedPosts()
-        lifecycleScope.launchWhenCreated {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.likedPosts.collect{ it ->
                 when (it) {
                     is Resource.Error -> {

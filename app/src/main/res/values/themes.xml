@@ -16,4 +16,10 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="CustomOutlineBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/secondary_text</item>
+        <item name="android:textColorHint">@color/secondary_text</item>
+        <item name="hintTextColor">@color/secondary_text</item>
+    </style>
+
 </resources>
