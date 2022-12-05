@@ -1,4 +1,4 @@
-# Let-s-Connect
+
 
 <h1 align="center">Let's Connect</h1></br>
 <p align="center">  
@@ -12,11 +12,14 @@ A social media app based on modern Android tech-stacks and MVVM architecture. Co
  
 </p>
 
-## Download
-
-
-## Screenshots
+## Previews
 <p align="center">
+<img src="previews/record 5.gif" width="125" height = "275">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="previews/record 1.gif" width="125" height = "275">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="previews/record 2.gif" width="125" height = "275">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="previews/record 3.gif" width="125" height = "275">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="previews/record 4.gif" width="125" height = "275">&nbsp;&nbsp;&nbsp;&nbsp;
+</p>
 
 
 
