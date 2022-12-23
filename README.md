@@ -2,7 +2,15 @@
 
 <h1 align="center">Let's Connect</h1></br>
 <p align="center">  
-A social media app based on modern Android tech-stacks and MVVM architecture. Connect with your friends or make new friends, chat with them. Create new posts like, comment on others posts.
+A simple social media app which includes:
+User registration and login: Users can create an account and log in to the app using their email address and a password.
+Profile creation: Users can create a profile that includes their name, profile picture.
+Feed: Users can view a feed of posts from their friends and followers, as well as posts that are popular within the app.
+Post creation: Users can create and share text posts with their friends and followers.
+Commenting and liking: Users can like and comment on posts made by their friends and followers.
+Direct messaging: Users can send private messages to one another.
+Search: Users can search for other users within the app.
+
 </p>
 </br>
 
