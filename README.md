@@ -1,15 +1,15 @@
 
 
 <h1 align="center">Let's Connect</h1></br>
-<p align="center">  
-A simple social media app which includes:
-User registration and login: Users can create an account and log in to the app using their email address and a password.
-Profile creation: Users can create a profile that includes their name, profile picture.
-Feed: Users can view a feed of posts from their friends and followers, as well as posts that are popular within the app.
-Post creation: Users can create and share text posts with their friends and followers.
-Commenting and liking: Users can like and comment on posts made by their friends and followers.
-Direct messaging: Users can send private messages to one another.
-Search: Users can search for other users within the app.
+<p align="left">  
+A simple social media app which includes:</br>
+<b>User registration and login:</b>  Users can create an account and log in to the app using their email address and a password.</br>
+<b>Profile creation:</b>  Users can create a profile that includes their name, profile picture.</br>
+<b>Feed:</b>  Users can view a feed of posts from their friends and followers, as well as posts that are popular within the app.</br>
+<b>Post creation:</b>  Users can create and share text posts with their friends and followers.</br>
+<b>Commenting and liking:</b>  Users can like and comment on posts made by their friends and followers.</br>
+<b>Direct messaging:</b>  Users can send private messages to one another.</br>
+<b>Search:</b>  Users can search for other users within the app.</br>
 
 </p>
 </br>
