@@ -3,13 +3,13 @@
 <h1 align="center">Let's Connect</h1></br>
 <p align="left">  
 A simple social media app which includes:</br>
-<b>User registration and login:</b>  Users can create an account and log in to the app using their email address and a password.</br>
-<b>Profile creation:</b>  Users can create a profile that includes their name, profile picture.</br>
-<b>Feed:</b>  Users can view a feed of posts from their friends and followers, as well as posts that are popular within the app.</br>
-<b>Post creation:</b>  Users can create and share text posts with their friends and followers.</br>
-<b>Commenting and liking:</b>  Users can like and comment on posts made by their friends and followers.</br>
-<b>Direct messaging:</b>  Users can send private messages to one another.</br>
-<b>Search:</b>  Users can search for other users within the app.</br>
+<b>User registration and login:</b>&nbsp &nbsp Users can create an account and log in to the app using their email address and a password.</br>
+<b>Profile creation:</b>&nbsp &nbsp Users can create a profile that includes their name, profile picture.</br>
+<b>Feed:</b>&nbsp &nbsp Users can view a feed of posts from their friends and followers, as well as posts that are popular within the app.</br>
+<b>Post creation:</b>&nbsp &nbsp Users can create and share text posts with their friends and followers.</br>
+<b>Commenting and liking:</b>&nbsp &nbsp Users can like and comment on posts made by their friends and followers.</br>
+<b>Direct messaging:</b>&nbsp &nbsp Users can send private messages to one another.</br>
+<b>Search:</b>&nbsp &nbsp Users can search for other users within the app.</br>
 
 </p>
 </br>
